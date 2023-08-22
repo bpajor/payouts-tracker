@@ -1,0 +1,23 @@
+nav {
+  background-color: RGBA(255, 161, 49, 0.56);
+}
+
+.list {
+  list-style: none;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  font-size: 1.5rem;
+}
+
+.list--item {
+  padding: 10px;
+  text-decoration: none;
+  color: black;
+}
+
+.list--item:hover {
+  color: gray;
+}
