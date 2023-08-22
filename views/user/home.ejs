@@ -1,11 +1,19 @@
 <%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="/css/home.css">
 </head>
 
 <body>
   <header>
     <%- include('../includes/navigation.ejs') %>
   </header>
-  <p>fdsjofnjsdnfjlksndf</p>
-  <button class="ui button">Follow</button>
+  <main class="not-auth">
+    <section class="message-item">
+        Track your expenses effectively ! &#128176;
+        <div class="message-item-control">
+            <a class="message-item-button" href="/login">Sign Up</a>
+            <a class="message-item-button" href="/signup">Log In</a>
+        </div>
+    </section>
+  </main>
 </body>
 </html>
