@@ -4,20 +4,23 @@
     box-sizing: border-box;
   }
 
+html, body {
+    height: 100%;
+}
+
 body {
-    background-color: aliceblue;
+    background-image: url('money-2696219_1920.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     margin: 0;
     padding: 0;
     font-family: "Open Sans", sans-serif;
 }
 
 .not-auth {
-    background-image: url('money-2696219_1920.jpg');
-    background-size: cover;
-    background-position: center;
-    height: 93vh;
     display: flex;
     flex-flow: column;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
 }

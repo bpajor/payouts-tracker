@@ -9,6 +9,7 @@
 }
 
 .message-item {
+  margin-top: 15%;
   font-size: 1.5rem;
   border: 2px solid black;
   display: flex;
@@ -44,4 +45,10 @@
 
 .message-item-button:hover {
   color: rgb(75, 70, 70);
+}
+
+@media screen and (max-width: 580px) {
+    .message-item {
+        font-size: 0.7rem;
+    }
 }
