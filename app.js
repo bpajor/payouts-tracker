@@ -27,7 +27,10 @@ app.use(userRoutes);
 app.use(authRoutes);
 
 app.use((error, req, res, next) => {          //error middleware
-  console.log(error.content.reasons);
+  if (error.message === 'Validator error') {
+    const errorContent = error.content;
+    res.render('auth/signup', {pageTitle: 'Zarejestruj się', errors: errorContent.reasons, oldInput: errorContent.inputs})
+  }
 });
 
 appListen(app);

@@ -71,7 +71,13 @@
   color: rgb(112, 33, 33);
   font-size: 0.8rem;
   display: none;
-  animation: fadeIn 1s ease-in-out;;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 @media screen and (max-width: 1200px) {

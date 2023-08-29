@@ -1,7 +1,12 @@
 import { validationResult } from "express-validator";
 
 export const getSignup = (req, res, next) => {
-  res.render("auth/signup");
+  console.log("render signup");
+  res.render("auth/signup", {
+    pageTitle: "Zarejestruj się",
+    errors: [],
+    oldInput: undefined,
+  });
 };
 
 export const postSignup = (req, res, next) => {
@@ -15,7 +20,6 @@ export const postSignup = (req, res, next) => {
   if (!errors.isEmpty()) {
     const error = new Error("Validator error");
     error.httpStatusCode = 422;
-    console.log(errors.array());
     const reasons = errors.array().map((reason) => {
       return { path: reason.path, msg: reason.msg };
     });

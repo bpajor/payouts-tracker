@@ -9,49 +9,70 @@
     <main class="not-auth">
       <form action="/signup" method="POST" class="signup--form" onsubmit="onFormSubmit(event)">
         <p class="title">Załóż konto</p>
+        <% errors.forEach(error => {
+          if (error.path === 'name') { %>
+            <div class="error flex" id="name--invalid"><%= error.msg %></div>
+        <% }}) %> 
         <div class="error" id="name--hidden">
           <p>Podaj proszę poprawne imię !</p>
         </div>
         <div class="form-control">
           <label for="name" class="form-label">Podaj imię: </label>
-          <input class="form-input" type="text" id="name" name="name">
+          <input class="form-input" type="text" id="name" name="name" value="<%= oldInput ? oldInput.name : '' %>">
         </div>
+        <% errors.forEach(error => {
+          if (error.path === 'surname') { %>
+            <div class="error flex" id="surname--invalid"><%= error.msg %></div>
+        <% }}) %> 
         <div class="error" id="surname--hidden">
           <p>Podaj proszę poprawne nazwisko !</p>
         </div>
         <div class="form-control">
           <label for="surname" class="form-label">Podaj nazwisko:</label>
-          <input class="form-input" type="text" id="surname" name="surname">
+          <input class="form-input" type="text" id="surname" name="surname" value="<%= oldInput ? oldInput.surname : '' %>">
         </div>
+        <% errors.forEach(error => {
+          if (error.path === 'email') { %>
+            <div class="error flex" id="email--invalid"><%= error.msg %></div>
+        <% }}) %> 
         <div class="error" id="email--hidden">
           <p>Podaj proszę poprawny email !</p>
         </div>
         <div class="form-control">
           <label for="email" class="form-label">Podaj email:</label>
-          <input class="form-input" type="email" id="email" name="email">
+          <input class="form-input" type="email" id="email" name="email" value="<%= oldInput ? oldInput.email : '' %>">
         </div>
+        <% errors.forEach(error => {
+          if (error.path === 'password') { %>
+            <div class="error flex" id="password--invalid"><%= error.msg %></div>
+        <% }}) %> 
         <div class="error" id="password--hidden">
           <p>Podaj hasło które ma conajmniej 6 znaków oraz posiada tylko cyfry bądź litery !</p>
         </div>
         <div class="form-control">
           <label for="password" class="form-label">Podaj hasło: </label>
-          <input class="form-input" type="password" id="password" name="password">
+          <input class="form-input" type="password" id="password" name="password" value="<%= oldInput ? oldInput.password : '' %>">
         </div>
+        <% errors.forEach(error => {
+          if (error.path === 'confirmPassword') { %>
+            <div class="error flex" id="confirmPassword--invalid"><%= error.msg %></div>
+        <% }}) %> 
         <div class="error" id="confirmPassword--hidden">
           <p>Hasła muszą się zgadzać !</p>
         </div>
         <div class="form-control">
           <label for="confirmPassword" class="form-label">Powtórz hasło: </label>
-          <input class="form-input" type="password" id="confirmPassword" name="confirmPassword">
+          <input class="form-input" type="password" id="confirmPassword" name="confirmPassword" value="<%= oldInput ? oldInput.confirmPassword : '' %>">
         </div>
         <div class="form-control">
           <button type="submit" class="message-item-button">Załóż konto</button>
         </div>
       </form>
     </main>
+
     <script>
       const isNameOrSurname = (name) => {
-        return /^[a-zA-Z]+$/.test(name);
+        return /^[a-zA-ZąĄćĆęĘłŁńŃóÓśŚźŹżŻ]+$/.test(name);
       }
 
       const isEmail = (email) => {
@@ -66,6 +87,18 @@
         return password == confirmPassword
       }
 
+      const resetErrorMessages = (allFields) => {
+        allFields.forEach(field => {
+          console.log(field.id);
+          const hiddenItem = document.getElementById(`${field.id}--hidden`);
+          const backendItem = document.getElementById(`${field.id}--invalid`);
+          hiddenItem.style.display = 'none';
+          if (backendItem) {
+            backendItem.style.display = 'none';
+          }
+        })
+      }
+
       const onFormSubmit = () => {
         const fields = [
           {id: 'name', validator: isNameOrSurname}, 
@@ -76,6 +109,8 @@
          ]
         
         const errors = [];
+
+        resetErrorMessages(fields);
 
         fields.forEach(field => {
           if (field.id === 'confirmPassword') {
@@ -92,6 +127,8 @@
           }
         })
 
+        console.log(errors);
+
         if (errors.length > 0) {
           event.preventDefault();
           errors.forEach(error => {
@@ -104,13 +141,6 @@
 
         }
 
-
-
-      
-
-      // const isEmail = (email) => {
-      //   return 
-      // }
     </script>
   </body>
 

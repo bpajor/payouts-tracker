@@ -1,4 +1,5 @@
 export const getHome = (req, res, next) => {
-    res.render("user/home");
+  console.log('render home');  
+   res.render("user/home", {pageTitle: 'Strona główna'});
   };
   

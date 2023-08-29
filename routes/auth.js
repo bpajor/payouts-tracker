@@ -10,14 +10,14 @@ router.post(
   "/signup",
   [
     body("name")
-      .isAlpha()
+      .matches(/^[a-zA-ZąĄćĆęĘłŁńŃóÓśŚźŹżŻ]+$/)
       .trim()
       .withMessage("Podaj proszę poprawne imię !")
       .customSanitizer((value) => {
         return value.charAt(0).toUpperCase() + value.slice(1);
       }),
     body("surname")
-      .isAlpha()
+      .matches(/^[a-zA-ZąĄćĆęĘłŁńŃóÓśŚźŹżŻ]+$/)
       .trim()
       .withMessage("Podaj proszę poprawne nazwisko !")
       .customSanitizer((value) => {
@@ -27,9 +27,15 @@ router.post(
       .isEmail()
       .withMessage("Podaj proszę poprawny email !")
       .normalizeEmail(),
-    body("password", "Podaj hasło które ma conajmniej 6 znaków oraz posiada tylko cyfry bądź litery")
-      .isLength({ min: 6 })
-      .isAlphanumeric()
+    body("password")
+      .custom((value, { req }) => {
+        if (value.length < 6 || !/^[a-zA-Z0-9]+$/.test(value)) {
+          throw new Error(
+            "Podaj hasło, które ma co najmniej 6 znaków i składa się tylko z liter i cyfr."
+          );
+        }
+        return true;
+      })
       .trim(),
     body("confirmPassword").custom((value, { req }) => {
       if (value !== req.body.password) {
