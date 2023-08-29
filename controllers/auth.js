@@ -26,4 +26,5 @@ export const postSignup = (req, res, next) => {
     error.content = { reasons, inputs: oldInput };
     return next(error);
   }
+  console.log(oldInput);
 };

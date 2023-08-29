@@ -7,12 +7,13 @@ import { fileURLToPath } from "url";
 import { appListen } from "./helpers/listen-app.js";
 import ConnectMongoDBSession from "connect-mongodb-session";
 import session from "express-session";
+import URI from "./URI.js";
 
 const MongoDBStore = ConnectMongoDBSession(session);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const URI = `mongodb+srv://pejdzor:6Km0lLIVhe6q93pv@payoutscluster.q9zysai.mongodb.net/payoutsDB`;
+// const URI = `mongodb+srv://pejdzor:6Km0lLIVhe6q93pv@payoutscluster.q9zysai.mongodb.net/payoutsDB`;
 
 const app = Express();
 const store = new MongoDBStore({ uri: URI, collection: "sessions" });
