@@ -13,7 +13,6 @@ const MongoDBStore = ConnectMongoDBSession(session);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-// const URI = `mongodb+srv://pejdzor:6Km0lLIVhe6q93pv@payoutscluster.q9zysai.mongodb.net/payoutsDB`;
 
 const app = Express();
 const store = new MongoDBStore({ uri: URI, collection: "sessions" });
