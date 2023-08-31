@@ -13,12 +13,15 @@
   margin-top: 30px;
   border: 2px solid black;
   background-color: RGBA(250, 235, 215, 0.8);
-  /* opacity: 0.8; */
   display: flex;
   flex-flow: column;
   justify-content: center;
   align-items: center;
   width: 50%;
+} 
+
+.login {
+  margin-top: 100px;
 }
 
 .form-control {
@@ -85,7 +88,11 @@
     margin-top: 0px;
     width: 100%;
     height: 100%;
-   } 
+   }
+   
+   .login {
+    margin-top: 100px;
+   }
    /* p {
       font-size: 1rem;
     }

@@ -1,5 +1,5 @@
   <%- include('../includes/head.ejs') %>
-  <link rel="stylesheet" href="/css/signupForm.css">
+  <link rel="stylesheet" href="/css/authForm.css">
   </head>
 
   <body>
@@ -33,10 +33,12 @@
         </div>
         <% errors.forEach(error => {
           if (error.path === 'email') { %>
-            <div class="error flex" id="email--invalid"><%= error.msg %></div>
+            <div class="error flex" id="email--invalid">
+                <p><%= error.msg %></p>
+            </div>
         <% }}) %> 
         <div class="error" id="email--hidden">
-          <p>Podaj proszę poprawny email !</p>
+          <p>Podaj poprawny email !</p>
         </div>
         <div class="form-control">
           <label for="email" class="form-label">Podaj email:</label>

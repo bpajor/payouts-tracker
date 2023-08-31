@@ -1,0 +1,92 @@
+<%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="/css/authForm.css">
+</head>
+
+<body>
+  <header>
+    <%- include('../includes/navigation.ejs') %>
+  </header>
+  <main class="not-auth">
+    <form action="/" method="POST" class="signup--form login" onsubmit="onFormSubmit(event)">
+        <p class="title">Zaloguj się</p>
+        <div class="error" id="email--hidden">
+            <p>Podaj poprawny email !</p>
+          </div>
+        <div class="form-control">
+          <label for="email" class="form-label">Podaj email: </label>
+          <input class="form-input" type="email" id="email" name="email">
+        </div>
+        <div class="error" id="password--hidden">
+            <p>Podaj hasło które ma conajmniej 6 znaków oraz posiada tylko cyfry bądź litery !</p>
+          </div>
+        <div class="form-control">
+            <label for="password" class="form-label">Podaj hasło: </label>
+            <input class="form-input" type="password" id="password" name="password">
+        </div>
+        <div class="form-control">
+            <button type="submit" class="message-item-button">Zaloguj się</button>
+        </div>
+    </form>
+  </main>
+
+  <script>
+    const isEmail = (email) => {
+      return /(?:[a-z0-9+!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/gi.test(email)
+    }
+
+    const isPassword = (password) => {
+      return /^[a-zA-Z0-9]+$/.test(password) && password.length > 5
+    }
+
+    const resetErrorMessages = (allFields) => {
+      allFields.forEach(field => {
+        console.log(field.id);
+        const hiddenItem = document.getElementById(`${field.id}--hidden`);
+        const backendItem = document.getElementById(`${field.id}--invalid`);
+        hiddenItem.style.display = 'none';
+        if (backendItem) {
+          backendItem.style.display = 'none';
+        }
+      })
+    }
+
+    const onFormSubmit = () => {
+      const fields = [
+        {id: 'email', validator: isEmail},
+        {id: 'password', validator: isPassword},
+       ]
+      
+      const errors = [];
+
+      resetErrorMessages(fields);
+
+      fields.forEach(field => {
+        if (field.id === 'confirmPassword') {
+          const passwordInputValue = document.getElementById('password').value;
+          const confirmPasswordInputValue = document.getElementById(field.id).value
+          return
+        }
+        const inputValue = document.getElementById(field.id).value;
+        if (!field.validator(inputValue)) {
+          errors.push({id: `${field.id}--hidden`})
+        }
+      })
+
+      console.log(errors);
+
+      if (errors.length > 0) {
+        event.preventDefault();
+        errors.forEach(error => {
+          const item = document.getElementById(error.id);
+          item.style.display = 'flex';
+          item.style.justifyContent = 'center';
+          item.style.alignItems = 'center';
+        })
+      }
+
+      }
+
+  </script>
+</body>
+
+</html>

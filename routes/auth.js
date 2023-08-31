@@ -1,5 +1,5 @@
 import Express from "express";
-import { getSignup, postSignup } from "../controllers/auth.js";
+import { getLogin, getSignup, postSignup } from "../controllers/auth.js";
 import { body } from "express-validator";
 
 export const router = Express.Router();
@@ -46,3 +46,5 @@ router.post(
   ],
   postSignup
 );
+
+router.get('/login', getLogin);

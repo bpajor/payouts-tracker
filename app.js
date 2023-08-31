@@ -32,21 +32,21 @@ app.use((error, req, res, next) => {
   switch (error.message) {
     case "Validator error":
       const errorContent = error.content;
-      res
-        .status(error.httpStatusCode)
-        .render("auth/signup", {
-          pageTitle: "Zarejestruj się",
-          errors: errorContent.reasons,
-          oldInput: errorContent.inputs,
-        });
+      console.log(errorContent.isUserSigned);
+      res.status(error.httpStatusCode).render("auth/signup", {
+        pageTitle: "Zarejestruj się",
+        errors: errorContent.reasons,
+        oldInput: errorContent.inputs,
+        isUserSigned: errorContent.isUserSigned,
+      });
       break;
 
     case "Server bug":
       res
         .status(error.httpStatusCode)
         .render("error/500", { pageTitle: "Błąd Serwera" });
+      break;
   }
-
 });
 
 appListen(app);
