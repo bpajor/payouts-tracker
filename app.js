@@ -26,11 +26,27 @@ app.use(Express.static(path.join(__dirname, "public")));
 app.use(userRoutes);
 app.use(authRoutes);
 
-app.use((error, req, res, next) => {          //error middleware
-  if (error.message === 'Validator error') {
-    const errorContent = error.content;
-    res.render('auth/signup', {pageTitle: 'Zarejestruj się', errors: errorContent.reasons, oldInput: errorContent.inputs})
+app.use((error, req, res, next) => {
+  //error middleware
+
+  switch (error.message) {
+    case "Validator error":
+      const errorContent = error.content;
+      res
+        .status(error.httpStatusCode)
+        .render("auth/signup", {
+          pageTitle: "Zarejestruj się",
+          errors: errorContent.reasons,
+          oldInput: errorContent.inputs,
+        });
+      break;
+
+    case "Server bug":
+      res
+        .status(error.httpStatusCode)
+        .render("error/500", { pageTitle: "Błąd Serwera" });
   }
+
 });
 
 appListen(app);
