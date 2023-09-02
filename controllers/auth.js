@@ -1,9 +1,8 @@
 import { validationResult } from "express-validator";
 import bcrypt from "bcryptjs";
-import {User} from "../models/user.js";
+import { User } from "../models/user.js";
 
 export const getSignup = (req, res, next) => {
-  console.log("render signup");
   res.render("auth/signup", {
     pageTitle: "Zarejestruj się",
     errors: [],
@@ -19,16 +18,20 @@ export const postSignup = async (req, res, next) => {
   const confirmPassword = req.body.confirmPassword;
   const oldInput = { name, surname, email, password, confirmPassword };
   const errors = validationResult(req);
-  const filteredUsers = await User.find().where('email').equals(email);
+  const filteredUsers = await User.find().where("email").equals(email);
   const isUserSigned = filteredUsers.length !== 0;
   if (!errors.isEmpty() || isUserSigned) {
-    const error = new Error("Validator error");
+    const error = new Error("Signup error");
+    error.view = "auth/signup";
     error.httpStatusCode = 422;
     const reasons = errors.array().map((reason) => {
       return { path: reason.path, msg: reason.msg };
     });
     if (isUserSigned) {
-      reasons.push({path: 'email', msg: 'Użytkownik o danym emailu istnieje !'})
+      reasons.push({
+        path: "email",
+        msg: "Użytkownik o danym emailu istnieje !",
+      });
     }
     error.content = { reasons, inputs: oldInput, isUserSigned };
     return next(error);
@@ -45,12 +48,80 @@ export const postSignup = async (req, res, next) => {
     const saveUserResult = await user.save();
     res.redirect("/login");
   } catch (error) {
-    error.message = 'Server bug';
+    error.message = "Server bug";
     error.httpStatusCode = 500;
     return next(error);
   }
 };
 
 export const getLogin = (req, res, next) => {
-  res.render('auth/login', {pageTitle: 'Zaloguj się'})
-}
+  res.render("auth/login", {
+    pageTitle: "Zaloguj się",
+    errors: [],
+    oldInput: undefined
+  });
+};
+
+export const postLogin = async (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const oldInput = { email, password };
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const error = new Error("Login error");
+    error.view = "auth/login";
+    error.httpStatusCode = 422;
+    const reasons = errors.array().map((reason) => {
+      return { path: reason.path, msg: reason.msg };
+    });
+    error.content = { reasons, inputs: oldInput, isUserSigned: undefined };
+    return next(error);
+  }
+
+  const userQuery = User.where({ email: email });
+  try {
+    const foundUser = await userQuery.findOne();
+    if (!foundUser) {
+      throw new Error("Bad email");
+    }
+    const userPassword = foundUser.password;
+    const isInputPasswordCorrect = await bcrypt.compare(password, userPassword);
+    if (!isInputPasswordCorrect) {
+      throw new Error("Bad password");
+    }
+    req.session.isLoggedIn = true;
+    req.session.user = foundUser;
+    req.session.save((err) => {
+      if (err) {
+        throw new Error("Server bug");
+      }
+    });
+  } catch (error) {
+    switch (error.message) {
+      case "Server bug":
+        error.httpStatusCode = 500;
+        return next(error);
+      case "Bad email":
+        error.httpStatusCode = 422;
+        break;
+      case "Bad password":
+        error.httpStatusCode = 401;
+        break;
+    }
+    error.view = "auth/login";
+    // const reasons = errors.array().map((reason) => {
+    //   return { path: reason.path, msg: reason.msg };
+    // });
+    const reasons = [
+      {
+        path: error.message === "Bad email" ? "email" : "password",
+        msg:
+          error.message === "Bad email"
+            ? "Użytkownik o tym adresie email nie istnieje. Spróbuj ponownie"
+            : "Podałeś niepoprawne hasło",
+      },
+    ];
+    error.content = { reasons, inputs: oldInput, isUserSigned: undefined };
+    return next(error);
+  }
+};

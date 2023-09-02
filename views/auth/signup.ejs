@@ -7,7 +7,7 @@
       <%- include('../includes/navigation.ejs') %>
     </header>
     <main class="not-auth">
-      <form action="/signup" method="POST" class="signup--form" onsubmit="onFormSubmit(event)">
+      <form action="/signup" method="POST" class="auth--form" onsubmit="onFormSubmit(event)">
         <p class="title">Załóż konto</p>
         <% errors.forEach(error => {
           if (error.path === 'name') { %>

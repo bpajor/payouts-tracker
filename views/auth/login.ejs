@@ -7,21 +7,33 @@
     <%- include('../includes/navigation.ejs') %>
   </header>
   <main class="not-auth">
-    <form action="/" method="POST" class="signup--form login" onsubmit="onFormSubmit(event)">
+    <form action="/login" method="POST" class="auth--form login" onsubmit="onFormSubmit(event)">
         <p class="title">Zaloguj się</p>
+        <% errors.forEach(error => {
+          if (error.path === 'email') { %>
+            <div class="error flex" id="email--invalid">
+                <p><%= error.msg %></p>
+            </div>
+        <% }}) %> 
         <div class="error" id="email--hidden">
             <p>Podaj poprawny email !</p>
           </div>
         <div class="form-control">
           <label for="email" class="form-label">Podaj email: </label>
-          <input class="form-input" type="email" id="email" name="email">
+          <input class="form-input" type="email" id="email" name="email" value="<%= oldInput ? oldInput.email : '' %>">
         </div>
+        <% errors.forEach(error => {
+          if (error.path === 'password') { %>
+            <div class="error flex" id="password--invalid">
+              <p><%= error.msg %></p>
+            </div>
+        <% }}) %> 
         <div class="error" id="password--hidden">
             <p>Podaj hasło które ma conajmniej 6 znaków oraz posiada tylko cyfry bądź litery !</p>
           </div>
         <div class="form-control">
             <label for="password" class="form-label">Podaj hasło: </label>
-            <input class="form-input" type="password" id="password" name="password">
+            <input class="form-input" type="password" id="password" name="password" value="<%= oldInput ? oldInput.password : '' %>">
         </div>
         <div class="form-control">
             <button type="submit" class="message-item-button">Zaloguj się</button>

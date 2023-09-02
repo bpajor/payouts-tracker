@@ -1,5 +1,10 @@
 import Express from "express";
-import { getLogin, getSignup, postSignup } from "../controllers/auth.js";
+import {
+  getLogin,
+  getSignup,
+  postLogin,
+  postSignup,
+} from "../controllers/auth.js";
 import { body } from "express-validator";
 
 export const router = Express.Router();
@@ -47,4 +52,25 @@ router.post(
   postSignup
 );
 
-router.get('/login', getLogin);
+router.get("/login", getLogin);
+
+router.post(
+  "/login",
+  [
+    body("email")
+      .isEmail()
+      .withMessage("Podaj poprawny email !")
+      .normalizeEmail(),
+    body("password")
+      .custom((value, { req }) => {
+        if (value.length < 6 || !/^[a-zA-Z0-9]+$/.test(value)) {
+          throw new Error(
+            "Podaj hasło, które ma co najmniej 6 znaków i składa się tylko z liter i cyfr."
+          );
+        }
+        return true;
+      })
+      .trim(),
+  ],
+  postLogin
+);

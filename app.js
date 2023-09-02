@@ -22,6 +22,14 @@ app.set("views", "views");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(Express.static(path.join(__dirname, "public")));
+app.use(
+  session({
+    secret: "13RDn3U9LvxRDTY",
+    resave: false,
+    saveUninitialized: false,
+    store: store,
+  })
+);
 
 app.use(userRoutes);
 app.use(authRoutes);
@@ -30,16 +38,19 @@ app.use((error, req, res, next) => {
   //error middleware
 
   switch (error.message) {
-    case "Validator error":
+    case "Signup error":
+    case "Login error":
+    case "Bad email":
+    case "Bad password":
+      console.log(error.content.reasons);
       const errorContent = error.content;
-      console.log(errorContent.isUserSigned);
-      res.status(error.httpStatusCode).render("auth/signup", {
-        pageTitle: "Zarejestruj się",
+      return res.status(error.httpStatusCode).render(error.view, {
+        pageTitle:
+          error.message === "Signup error" ? "Zarejestruj się" : "Zaloguj się",
         errors: errorContent.reasons,
         oldInput: errorContent.inputs,
         isUserSigned: errorContent.isUserSigned,
       });
-      break;
 
     case "Server bug":
       res
