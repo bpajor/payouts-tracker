@@ -43,6 +43,11 @@
   -moz-box-shadow: 10px 10px 5px -5px rgba(0, 0, 0, 0.75);
 }
 
+.btn--logout {
+  padding: 20px;
+  font-size: 1.2rem;
+}
+
 .message-item-button:hover {
   color: rgb(75, 70, 70);
 }

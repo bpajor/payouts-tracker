@@ -1,15 +1,30 @@
 nav {
   background-color: RGBA(255, 161, 49);
+  display: flex;
 }
 
 .list {
   list-style: none;
   display: flex;
   justify-content: flex-end;
+  width: 100%;
+  height: 100%;
   gap: 10px;
   margin: 0;
   padding: 0;
   font-size: 1.5rem;
+}
+
+.right-list {
+  width: 70%;
+}
+
+.left-list {
+  width: 30%;
+}
+
+.menu {
+  justify-content: flex-start;
 }
 
 .list--item {
@@ -20,4 +35,23 @@ nav {
 
 .list--item:hover {
   color: gray;
+}
+
+button.list--item {
+  background-color: RGBA(255, 161, 49);
+  border: none;
+  height: 100%;
+  font-size: inherit;
+}
+
+@media screen and (max-width: 700px) {
+  .list {
+    font-size: 1rem;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .list {
+    font-size: 0.6rem;
+  }
 }

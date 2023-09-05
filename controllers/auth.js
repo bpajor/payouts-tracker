@@ -96,6 +96,7 @@ export const postLogin = async (req, res, next) => {
         throw new Error("Server bug");
       }
     });
+    res.redirect('/');
   } catch (error) {
     switch (error.message) {
       case "Server bug":

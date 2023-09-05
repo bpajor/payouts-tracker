@@ -31,6 +31,23 @@ app.use(
   })
 );
 
+// app.use((req, res, next) => {
+//   res.locals.isAuthenticated = req.session.isLoggedIn;
+//   next();
+// })
+
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  const loggedInUser = req.session.user;
+
+  if (!loggedInUser) {
+    return next();
+  }
+
+  req.user = loggedInUser;
+  next();
+});
+
 app.use(userRoutes);
 app.use(authRoutes);
 

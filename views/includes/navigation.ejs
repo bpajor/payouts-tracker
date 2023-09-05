@@ -1,6 +1,21 @@
 <nav>
-   <ul class="list">
-        <a class="list--item" href="/signup">Zarejestruj się</a>
-        <a class="list--item" href="/login">Zaloguj się</a>
-   </ul>
+  <% if (isAuthenticated) {%>
+  <div class="right-list">
+    <ul class="list menu">
+      <a class="list--item" href="/login">Pracownicy</a>
+      <a class="list--item" href="/login">Kampania</a>
+      <a class="list--item" href="/login">Historia kampanii</a>
+    </ul>
+  </div>
+  <div class="left-list">
+    <ul class="list">
+      <button class="list--item" id="logout-button">Wyloguj się</button>
+    </ul>
+  </div>
+  <% } else { %>
+  <ul class="list">
+    <a class="list--item" href="/signup">Zarejestruj się</a>
+    <a class="list--item" href="/login">Zaloguj się</a>
+  </ul>
+  <% } %>
 </nav>

@@ -1,19 +1,36 @@
 <%- include('../includes/head.ejs') %>
 <link rel="stylesheet" href="/css/home.css">
+<script
+      src="https://kit.fontawesome.com/5410e8ffe4.js"
+      crossorigin="anonymous"
+    ></script>
 </head>
 
 <body>
+  <div id="overlay"></div>
+  <form id="confirmation-form" method="POST" action="/logout">
+    <p>Czy na pewno chcesz się wylogować?</p>
+    <button class="message-item-button btn--logout" type="submit" id="confirm-logout">Tak</button>
+    <button class="message-item-button btn--logout" type="button" id="cancel-logout">Anuluj</button>
+  </form>
   <header>
     <%- include('../includes/navigation.ejs') %>
   </header>
-  <main class="not-auth">
-    <section class="message-item">
-        Śledź efektywnie wydatki na płace ! &#128176;
-        <div class="message-item-control">
-            <a class="message-item-button" href="/signup">Zarejestruj się</a>
-            <a class="message-item-button" href="/login">Zaloguj się</a>
-        </div>
-    </section>
-  </main>
+  <% if (isAuthenticated) {%>
+    <main class="auth">
+      Gówno
+    </main>
+  <% } else { %>
+    <main class="not-auth">
+      <section class="message-item">
+          Śledź efektywnie wydatki na płace ! &#128176;
+          <div class="message-item-control">
+              <a class="message-item-button" href="/signup">Zarejestruj się</a>
+              <a class="message-item-button" href="/login">Zaloguj się</a>
+          </div>
+      </section>
+    </main>
+  <% } %>
+  <%-include('../includes/logout.ejs')%>
 </body>
 </html>
