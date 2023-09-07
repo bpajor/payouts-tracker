@@ -58,7 +58,7 @@ export const getLogin = (req, res, next) => {
   res.render("auth/login", {
     pageTitle: "Zaloguj się",
     errors: [],
-    oldInput: undefined
+    oldInput: undefined,
   });
 };
 
@@ -91,12 +91,12 @@ export const postLogin = async (req, res, next) => {
     }
     req.session.isLoggedIn = true;
     req.session.user = foundUser;
-    req.session.save((err) => {
+    const sessionSaveResult = await req.session.save((err) => {
       if (err) {
         throw new Error("Server bug");
       }
     });
-    res.redirect('/');
+    res.redirect("/");
   } catch (error) {
     switch (error.message) {
       case "Server bug":
@@ -125,4 +125,15 @@ export const postLogin = async (req, res, next) => {
     error.content = { reasons, inputs: oldInput, isUserSigned: undefined };
     return next(error);
   }
+};
+
+export const postLogout = async (req, res, next) => {
+  const sessionDestroyResult = await req.session.destroy((error) => {
+    if (error) {
+      error.message = "Server bug";
+      error.httpStatusCode = 500;
+      return next(error);
+    }
+  });
+  res.redirect("/");
 };

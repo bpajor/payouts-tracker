@@ -1,0 +1,84 @@
+.table-control {
+    background-color: antiquewhite;
+    margin-top: 100px;
+    border: 1px solid black;
+    width: 800px;
+}
+
+.no-employees {
+    background-color: antiquewhite;
+    margin-top: 200px;
+    border: 1px solid black;
+    width: 400px;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-flow: column;
+}
+
+p {
+    font-weight: bold;
+}
+
+
+table {
+    background-color: antiquewhite;
+    border-collapse: collapse;
+    border: 1px solid black;
+    width: 100%;
+}
+
+.option--item {
+    border: 1px solid black;
+}
+
+.option--item-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+select {
+    background-color: rgb(221, 199, 170);
+    border: 2px solid black;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+input {
+    background-color: rgb(221, 199, 170);
+    border: 2px solid black;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+th {
+    border: 1px solid black;
+}
+
+.tr--options {
+    height: 50px;
+}
+
+@media screen and (max-width: 800px) {
+    .table-control {
+        width: 300px;
+        font-size: 0.7rem;
+    }
+
+    .option--item-control {
+        width: 140px;
+        font-size: 0.7rem;
+    }
+
+    select {
+        width: 70px;
+    }
+
+    input {
+        width: 100px;
+    }
+
+
+}

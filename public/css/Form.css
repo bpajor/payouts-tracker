@@ -8,8 +8,11 @@
   }
 }
 
+.deleg-select {
+  width: 50%;
+}
 
-.auth--form {
+.form {
   margin-top: 30px;
   border: 2px solid black;
   background-color: RGBA(250, 235, 215, 0.8);

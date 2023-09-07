@@ -59,11 +59,17 @@ app.use((error, req, res, next) => {
     case "Login error":
     case "Bad email":
     case "Bad password":
-      console.log(error.content.reasons);
-      const errorContent = error.content;
+    case "Adding employee error":
+    let pageTitle;
+    if (error.message === 'Adding employee error') {
+      pageTitle = 'Dodaj pracownika'
+    }
+    else {
+      pageTitle =  error.message === "Signup error" ? "Zarejestruj się" : "Zaloguj się";
+    }  
+    const errorContent = error.content;
       return res.status(error.httpStatusCode).render(error.view, {
-        pageTitle:
-          error.message === "Signup error" ? "Zarejestruj się" : "Zaloguj się",
+        pageTitle: pageTitle,
         errors: errorContent.reasons,
         oldInput: errorContent.inputs,
         isUserSigned: errorContent.isUserSigned,

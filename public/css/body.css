@@ -51,3 +51,33 @@ body {
     z-index: 2; /* Ustaw z-index wyżej niż tło */
 }
 
+.message-item-button {
+    border: 2px solid black;
+    text-decoration: none;
+    color: black;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: whitesmoke;
+    font-weight: bold;
+    box-shadow: 10px 10px 5px -5px rgba(0, 0, 0, 0.75);
+    -webkit-box-shadow: 10px 10px 5px -5px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 10px 10px 5px -5px rgba(0, 0, 0, 0.75);
+  }
+  
+  .btn--logout {
+    padding: 20px;
+    font-size: inherit;
+  }
+  
+  .message-item-button:hover {
+    color: rgb(75, 70, 70);
+  }
+
+@media screen and (max-width: 640px) {
+    #confirmation-form {
+        font-size: 0.7rem;
+        display: flex;
+        flex-flow: column;
+        gap: 20px;
+    }
+}

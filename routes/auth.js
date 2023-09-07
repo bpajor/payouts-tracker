@@ -3,13 +3,15 @@ import {
   getLogin,
   getSignup,
   postLogin,
+  postLogout,
   postSignup,
 } from "../controllers/auth.js";
 import { body } from "express-validator";
+import { isAuth } from "../middleware/is-auth.js";
 
 export const router = Express.Router();
 
-router.get("/signup", getSignup);
+router.get("/signup", isAuth, getSignup);
 
 router.post(
   "/signup",
@@ -49,10 +51,11 @@ router.post(
       return true;
     }),
   ],
+  isAuth,
   postSignup
 );
 
-router.get("/login", getLogin);
+router.get("/login", isAuth, getLogin);
 
 router.post(
   "/login",
@@ -72,5 +75,8 @@ router.post(
       })
       .trim(),
   ],
+  isAuth,
   postLogin
 );
+
+router.post('/logout', postLogout)

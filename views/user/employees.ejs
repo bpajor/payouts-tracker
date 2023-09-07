@@ -1,0 +1,56 @@
+<%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="css/employees.css">
+</head>
+
+<body>
+    <%- include('../includes/logout-overlay.ejs')%>
+    <header>
+        <%- include('../includes/navigation.ejs')%>
+    </header>
+    <main class="auth">
+        <% if (employees) {%>
+        <div class="table-control">
+        <table>
+                <tr>
+                    <td class="option--item">
+                        <div class="option--item-control">
+                            <p>Sortuj: </p>
+                            <select>
+                                <option>Alfabetycznie (rosnąco)</option>
+                                <option>Alfabetycznie (malejąco)</option>
+                                <option>Wg stawki (rosnąco)</option>
+                                <option>Wg stawki (malejąco)</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td class="option--item">
+                        <div class="option--item-control">
+                            <input type="text" placeholder="Szukaj..." id="">
+                        </div>
+                    </td>
+                </tr> 
+        </table>
+            <table>
+                <tbody>
+                    <thead>
+                        <tr>
+                            <th>Imię i nazwisko</th>
+                            <th>Stawka za godzinę</th>
+                            <th>Czy delegacja</th>
+                            <th>Godzin na dzień</th>
+                            <th>Edytuj</th>
+                            <th>Usuń</th>
+                        </tr>
+                    </thead>
+                </tbody>
+            </table>
+        </div>
+        <% } else { %>
+            <div class="no-employees">
+                <p>Nie dodałeś żadnych pracowników</p>
+                <a type="button" class="message-item-button" href="/add-employee">Dodaj pracownika</a>
+            </div>
+        <%}%>
+    </main>
+    <%-include('../includes/logout.ejs')%>
+</body>

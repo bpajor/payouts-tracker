@@ -1,0 +1,106 @@
+<%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="/css/Form.css">
+</head>
+
+<body>
+  <%- include('../includes/logout-overlay.ejs')%>
+  <header>
+    <%- include('../includes/navigation.ejs') %>
+  </header>
+  <main class="auth">
+    <form action="/add-employee" method="POST" class="form" onsubmit="onFormSubmit(event)">
+        <p class="title">Dodaj pracownika</p>
+        <% errors.forEach(error => {
+            if (error.path === 'name') { %>
+              <div class="error flex" id="name--invalid"><%= error.msg %></div>
+          <% }}) %> 
+        <div class="error" id="name--hidden">
+            <p>Podaj poprawne imię !</p>
+          </div>
+        <div class="form-control">
+            <label for="name" class="form-label">Podaj imię</label>
+            <input class="form-input" type="text" id="name" name="name" value="<%= oldInput ? oldInput.name : '' %>">
+        </div>
+        <% errors.forEach(error => {
+          if (error.path === 'surname') { %>
+            <div class="error flex" id="surname--invalid"><%= error.msg %></div>
+        <% }}) %> 
+        <div class="error" id="surname--hidden">
+            <p>Podaj poprawne nazwisko !</p>
+          </div>
+        <div class="form-control">
+            <label for="surname" class="form-label">Podaj nazwisko</label>
+            <input class="form-input" type="text" id="surname" name="surname" value="<%= oldInput ? oldInput.surname : '' %>">
+        </div>
+        <div class="form-control">
+            <label for="rate" class="form-label">Podaj stawkę na godzinę</label>
+            <input class="form-input" type="number" id="rate" name="rate" min="0" step="0.01" value="<%= oldInput ? oldInput.hourlyRate : '' %>">
+        </div>
+        <div class="form-control">
+            <label for="isDelegation" class="form-label">Czy delegacja?</label>
+            <select name="isDelegation" id="isDelegation" class="deleg-select">
+                <option value="yes">Tak</option>
+                <option value="no">Nie</option>
+            </select>
+        </div>
+        <div class="form-control">
+            <label for="hours" class="form-label">Podaj ile godzin pracownik wyrabia dziennie</label>
+            <input class="form-input" type="number" id="hours" name="hours" step="1" min="0" max="12" value="<%= oldInput ? oldInput.dailyHours : '' %>">
+        </div>
+        <div class="form-control">
+            <button type="submit" class="message-item-button">Załóż konto</button>
+        </div>
+    </form>
+  </main>
+  <%-include('../includes/logout.ejs')%>
+  <script>
+     const isNameOrSurname = (name) => {
+        return /^[a-zA-ZąĄćĆęĘłŁńŃóÓśŚźŹżŻ]+$/.test(name);
+      }
+
+      const resetErrorMessages = (allFields) => {
+        allFields.forEach(field => {
+          console.log(field.id);
+          const hiddenItem = document.getElementById(`${field.id}--hidden`);
+          const backendItem = document.getElementById(`${field.id}--invalid`);
+          hiddenItem.style.display = 'none';
+          if (backendItem) {
+            backendItem.style.display = 'none';
+          }
+        })
+      }
+
+      const onFormSubmit = () => {
+        const fields = [
+          {id: 'name', validator: isNameOrSurname}, 
+          {id: 'surname', validator: isNameOrSurname},
+         ]
+        
+        const errors = [];
+
+        resetErrorMessages(fields);
+
+        fields.forEach(field => {
+          const inputValue = document.getElementById(field.id).value;
+          if (!field.validator(inputValue)) {
+            errors.push({id: `${field.id}--hidden`})
+          }
+        })
+
+
+        if (errors.length > 0) {
+          event.preventDefault();
+          errors.forEach(error => {
+            const item = document.getElementById(error.id);
+            item.style.display = 'flex';
+            item.style.justifyContent = 'center';
+            item.style.alignItems = 'center';
+          })
+        }
+
+        }
+    
+  </script>
+</body>
+
+</html>

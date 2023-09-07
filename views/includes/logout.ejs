@@ -1,17 +1,12 @@
 <script>
     const logoutButton = document.getElementById('logout-button');
 
-// Pobierz overlay i formularz potwierdzenia
     const overlay = document.getElementById('overlay');
     const confirmationForm = document.getElementById('confirmation-form');
 
-// Pobierz przyciski potwierdzenia i anulowania
-    const confirmButton = document.getElementById('confirm-logout');
     const cancelButton = document.getElementById('cancel-logout');
 
-// Obsługa kliknięcia przycisku wylogowania
     logoutButton.addEventListener('click', () => {
-    // Pokaż overlay i formularz potwierdzenia
         overlay.style.display = 'block';
         confirmationForm.style.display = 'block';
     });
