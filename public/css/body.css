@@ -43,7 +43,7 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 1.5rem;
-    background-color: antiquewhite;
+    background-color: #faebd7;
     border: 2px solid black;
     padding: 60px;
     font-weight: bold;
@@ -57,7 +57,7 @@ body {
     color: black;
     padding: 10px;
     border-radius: 10px;
-    background-color: whitesmoke;
+    background-color: hsl(0, 0%, 96%);
     font-weight: bold;
     box-shadow: 10px 10px 5px -5px rgba(0, 0, 0, 0.75);
     -webkit-box-shadow: 10px 10px 5px -5px rgba(0, 0, 0, 0.75);
@@ -76,8 +76,8 @@ body {
 @media screen and (max-width: 640px) {
     #confirmation-form {
         font-size: 0.7rem;
-        display: flex;
+        /* display: flex;
         flex-flow: column;
-        gap: 20px;
+        gap: 20px; */
     }
 }

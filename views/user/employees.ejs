@@ -9,6 +9,7 @@
     </header>
     <main class="auth">
         <% if (employees) {%>
+        <a class="message-item-button btn-employees" href="/add-employee">Dodaj pracownika</a>
         <div class="table-control">
         <table>
                 <tr>
@@ -31,8 +32,7 @@
                 </tr> 
         </table>
             <table>
-                <tbody>
-                    <thead>
+                <thead>
                         <tr>
                             <th>Imię i nazwisko</th>
                             <th>Stawka za godzinę</th>
@@ -41,7 +41,22 @@
                             <th>Edytuj</th>
                             <th>Usuń</th>
                         </tr>
-                    </thead>
+                </thead>
+                <tbody>
+                    <% for (let employee of employees) { %>
+                        <tr>
+                            <td><%= employee.name %>  <%= employee.surname %></td>
+                            <td><%= employee.hourlyRate %></td>
+                            <td><%= employee.isDelegation === true ? 'Tak' : 'Nie' %></td>
+                            <td><%= employee.dailyHours %></td>
+                            <td>
+                                <a type="button" class="btn-employee" href="/edit-employee/<%= employee._id %>">Edytuj</a>
+                            </td> 
+                            <td>
+                                <a type="button" class="btn-employee">Usuń</button>
+                            </td>
+                        </tr>
+                    <% } %>
                 </tbody>
             </table>
         </div>

@@ -1,12 +1,12 @@
 .table-control {
     background-color: antiquewhite;
-    margin-top: 100px;
+    margin-top: 50px;
     border: 1px solid black;
     width: 800px;
 }
 
 .no-employees {
-    background-color: antiquewhite;
+    background-color: #faebd7;
     margin-top: 200px;
     border: 1px solid black;
     width: 400px;
@@ -53,8 +53,26 @@ input {
     padding: 5px;
 }
 
-th {
+th, td {
     border: 1px solid black;
+    text-align: center;
+}
+
+.btn-employees {
+    margin-top: 100px;
+    padding: 15px;
+}
+
+.btn-employee {
+    background-color: #B97318;
+    border: 2px solid black;
+    font-weight: bold;
+    text-decoration: none;
+    color: black;
+}
+
+.btn-employee:hover {
+    background-color: #E28E21;
 }
 
 .tr--options {
@@ -62,9 +80,23 @@ th {
 }
 
 @media screen and (max-width: 800px) {
+    .btn-employee {
+        width: 90%;
+        font-size: 0.6rem;
+        text-align: center;
+    }
+    
     .table-control {
         width: 300px;
-        font-size: 0.7rem;
+        font-size: 0.6rem;
+    }
+
+    table {
+        width: 300px;
+    }
+
+    td, th {
+        max-width: 50px;
     }
 
     .option--item-control {

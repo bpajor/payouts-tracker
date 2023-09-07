@@ -8,7 +8,7 @@
     <%- include('../includes/navigation.ejs') %>
   </header>
   <main class="auth">
-    <form action="/add-employee" method="POST" class="form" onsubmit="onFormSubmit(event)">
+    <form action="<%= edit ? '/edit-employee' : "/add-employee" %>" method="POST" class="form" onsubmit="onFormSubmit(event)">
         <p class="title">Dodaj pracownika</p>
         <% errors.forEach(error => {
             if (error.path === 'name') { %>
