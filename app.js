@@ -60,6 +60,7 @@ app.use((error, req, res, next) => {
     case "Bad email":
     case "Bad password":
     case "Adding employee error":
+    case 'Editing employee error':
     let pageTitle;
     if (error.message === 'Adding employee error') {
       pageTitle = 'Dodaj pracownika'
@@ -76,6 +77,7 @@ app.use((error, req, res, next) => {
       });
 
     case "Server bug":
+      console.log('error')
       res
         .status(error.httpStatusCode)
         .render("error/500", { pageTitle: "Błąd Serwera" });

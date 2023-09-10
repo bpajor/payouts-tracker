@@ -1,14 +1,15 @@
 import Express from "express";
-import { getAddEmployee, getEmployees, getHome, postAddEmployee } from "../controllers/user.js";
+import { getAddEmployee, getEditEmployee, getEmployees, getHome, postAddEmployee, postDeleteEmployee, postEditEmployee } from "../controllers/user.js";
 import { body } from "express-validator";
+import { isAuth } from "../middleware/is-auth.js";
 
 export const router = Express.Router();
 
 router.get("/", getHome);
 
-router.get("/employees", getEmployees);
+router.get("/employees", isAuth, getEmployees);
 
-router.get("/add-employee", getAddEmployee);
+router.get("/add-employee", isAuth, getAddEmployee);
 
 router.post("/add-employee", [
   body("name")
@@ -25,4 +26,10 @@ router.post("/add-employee", [
     .customSanitizer((value) => {
       return value.charAt(0).toUpperCase() + value.slice(1);
     }),
-], postAddEmployee);
+], isAuth, postAddEmployee);
+
+router.get('/edit-employee/:employeeId', isAuth, getEditEmployee);
+
+router.post('/edit-employee/:employeeId', isAuth, postEditEmployee);
+
+router.post('/delete-employee/:employeeId', isAuth, postDeleteEmployee);

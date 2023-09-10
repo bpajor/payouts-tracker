@@ -51,9 +51,11 @@
                             <td><%= employee.dailyHours %></td>
                             <td>
                                 <a type="button" class="btn-employee" href="/edit-employee/<%= employee._id %>">Edytuj</a>
-                            </td> 
+                            </td>  
                             <td>
-                                <a type="button" class="btn-employee">Usuń</button>
+                                <form action="/delete-employee/<%= employee._id %>" method="POST">
+                                    <button type="submit" class="btn-employee">Usuń</button>
+                                </form>
                             </td>
                         </tr>
                     <% } %>

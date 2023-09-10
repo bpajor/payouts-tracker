@@ -1,5 +1,6 @@
 import { validationResult } from "express-validator";
 import { Employee } from "../models/employee.js";
+import postAddEditEmployee from "../helpers/employeeAddEdit.js";
 
 export const getHome = (req, res, next) => {
   console.log(req.user);
@@ -8,21 +9,21 @@ export const getHome = (req, res, next) => {
 
 export const getEmployees = async (req, res, next) => {
   try {
-      let foundEmployees = await Employee.find().where('bossId').equals(req.user._id);
-      if (!foundEmployees.length) {
-        foundEmployees = undefined;
-      }
-      res.render("user/employees", {
+    let foundEmployees = await Employee.find()
+      .where("bossId")
+      .equals(req.user._id);
+    if (!foundEmployees.length) {
+      foundEmployees = undefined;
+    }
+    res.render("user/employees", {
       pageTitle: "Twoi pracownicy",
       employees: foundEmployees,
     });
-  }
-  catch (error) {
+  } catch (error) {
     error.message = "Server bug";
     error.httpStatusCode = 500;
     return next(error);
   }
-  
 };
 
 export const getAddEmployee = (req, res, next) => {
@@ -31,45 +32,57 @@ export const getAddEmployee = (req, res, next) => {
     errors: [],
     oldInput: {},
     isUserSigned: undefined,
-    edit: false
+    edit: false,
   });
 };
 
-export const getEditEmployee = (req, res, next) => {
-  
-}
+export const getEditEmployee = async (req, res, next) => {
+  const foundEmployee = await Employee.findById(req.params.employeeId);
+  const { name, surname, hourlyRate, dailyHours, _id } = foundEmployee;
+  const oldInput = {
+    name,
+    surname,
+    hourlyRate,
+    dailyHours,
+    id: _id.toString(),
+  };
+  console.log(oldInput);
+  res.render("user/add-employee", {
+    pageTitle: "Edytuj pracownika",
+    errors: [],
+    oldInput,
+    isUserSigned: undefined,
+    edit: true,
+  });
+};
 
 export const postAddEmployee = async (req, res, next) => {
-  const name = req.body.name;
-  const surname = req.body.surname;
-  const hourlyRate = req.body.rate;
-  const isDelegation = req.body.isDelegation === "yes" ? true : false;
-  const dailyHours = req.body.hours;
-  const oldInput = { name, surname, hourlyRate, dailyHours };
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const error = new Error("Adding employee error");
-    error.view = "user/add-employee";
-    error.httpStatusCode = 422;
-    const reasons = errors.array().map((reason) => {
-      return { path: reason.path, msg: reason.msg };
-    });
-    error.content = { reasons, inputs: oldInput, isUserSigned: undefined };
+  try {
+    await postAddEditEmployee(req, res, next, errors, "Add");
+  } catch (error) {
+    error.message = "Server bug";
+    error.httpStatusCode = 500;
     return next(error);
   }
+};
 
+export const postEditEmployee = async (req, res, next) => {
+  const errors = validationResult(req);
   try {
-    const employee = new Employee({
-      name,
-      surname,
-      hourlyRate,
-      isDelegation,
-      dailyHours,
-      bossId: req.user._id,
-    });
-    
-    const saveEmployeeResult = await employee.save();
-    res.redirect('/employees');
+    await postAddEditEmployee(req, res, next, errors, "Edit");
+  } catch (error) {
+    error.message = "Server bug";
+    error.httpStatusCode = 500;
+    return next(error);
+  }
+};
+
+export const postDeleteEmployee = async (req, res, next) => {
+  const employee = await Employee.findById(req.params.employeeId);
+  try {
+    await employee.deleteOne();
+    res.redirect("/employees");
   } catch (error) {
     error.message = "Server bug";
     error.httpStatusCode = 500;

@@ -51,7 +51,6 @@ router.post(
       return true;
     }),
   ],
-  isAuth,
   postSignup
 );
 
@@ -75,8 +74,7 @@ router.post(
       })
       .trim(),
   ],
-  isAuth,
   postLogin
 );
 
-router.post('/logout', postLogout)
+router.post('/logout', isAuth, postLogout)

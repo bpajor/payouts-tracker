@@ -8,8 +8,8 @@
     <%- include('../includes/navigation.ejs') %>
   </header>
   <main class="auth">
-    <form action="<%= edit ? '/edit-employee' : "/add-employee" %>" method="POST" class="form" onsubmit="onFormSubmit(event)">
-        <p class="title">Dodaj pracownika</p>
+    <form action="<%= edit ? `/edit-employee/${oldInput.id}` : "/add-employee" %>" method="POST" class="form" onsubmit="onFormSubmit(event)">
+        <p class="title"><%= edit ? 'Edytuj pracownika' : 'Dodaj pracownika'%></p>
         <% errors.forEach(error => {
             if (error.path === 'name') { %>
               <div class="error flex" id="name--invalid"><%= error.msg %></div>
@@ -48,7 +48,7 @@
             <input class="form-input" type="number" id="hours" name="hours" step="1" min="0" max="12" value="<%= oldInput ? oldInput.dailyHours : '' %>">
         </div>
         <div class="form-control">
-            <button type="submit" class="message-item-button">Załóż konto</button>
+            <button type="submit" class="message-item-button"><%= edit ? 'Edytuj' : 'Dodaj' %></button>
         </div>
     </form>
   </main>
