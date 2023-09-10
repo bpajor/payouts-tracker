@@ -1,0 +1,45 @@
+<script>
+  const searchInput = document.getElementById("search-input");
+
+  const rows = document.querySelectorAll(".employee-row");
+
+  searchInput.addEventListener("input", () => {
+    const searchInputValue = searchInput.value.toLowerCase();
+    const searchInputFirstPart = searchInputValue.split(" ")[0];
+    const searchInputSecondPart = searchInputValue.split(" ")[1];
+
+    rows.forEach((row) => {
+      const fullName = row
+        .querySelector(".employee-full-name")
+        .innerText.toLowerCase();
+      const firstName = fullName.split(" ")[0];
+      const secondName = fullName.split(" ")[1];
+
+      console.log(searchInputFirstPart, ' ', searchInputSecondPart);
+
+      if (!searchInputSecondPart) {
+        if (
+          firstName.includes(searchInputFirstPart) ||
+          secondName.includes(searchInputFirstPart)
+        ) {
+          if (row.style.display === "none") {
+            row.style.display = "";
+          }
+          return;
+        }
+      }
+
+      if (
+        firstName.includes(searchInputFirstPart) &&
+        secondName.includes(searchInputSecondPart)
+      ) {
+        if (row.style.display === "none") {
+          row.style.display = "";
+        }
+        return;
+      }
+      console.log('here');
+      row.style.display = "none";
+    });
+  });
+</script>

@@ -12,11 +12,13 @@
         <a class="message-item-button btn-employees" href="/add-employee">Dodaj pracownika</a>
         <div class="table-control">
         <table>
+                <thead>
                 <tr>
                     <td class="option--item">
                         <div class="option--item-control">
                             <p>Sortuj: </p>
-                            <select>
+                            <select id="sort-select">
+                                <option>-</option>
                                 <option>Alfabetycznie (rosnąco)</option>
                                 <option>Alfabetycznie (malejąco)</option>
                                 <option>Wg stawki (rosnąco)</option>
@@ -26,10 +28,11 @@
                     </td>
                     <td class="option--item">
                         <div class="option--item-control">
-                            <input type="text" placeholder="Szukaj..." id="">
+                            <input type="text" placeholder="Szukaj..." id="search-input">
                         </div>
                     </td>
-                </tr> 
+                </tr>
+            </thead> 
         </table>
             <table>
                 <thead>
@@ -44,8 +47,8 @@
                 </thead>
                 <tbody>
                     <% for (let employee of employees) { %>
-                        <tr>
-                            <td><%= employee.name %>  <%= employee.surname %></td>
+                        <tr class="employee-row">
+                            <td class="employee-full-name"><%= employee.name %>  <%= employee.surname %></td>
                             <td><%= employee.hourlyRate %></td>
                             <td><%= employee.isDelegation === true ? 'Tak' : 'Nie' %></td>
                             <td><%= employee.dailyHours %></td>
@@ -70,4 +73,6 @@
         <%}%>
     </main>
     <%-include('../includes/logout.ejs')%>
+    <%-include('../includes/sorting.ejs')%>
+    <%-include('../includes/searching.ejs')%>
 </body>
