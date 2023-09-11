@@ -91,12 +91,15 @@ export const postLogin = async (req, res, next) => {
     }
     req.session.isLoggedIn = true;
     req.session.user = foundUser;
-    const sessionSaveResult = await req.session.save((err) => {
+    req.session.save((err) => {
+      console.log('logging...')
       if (err) {
         throw new Error("Server bug");
       }
+      console.log('after login')
+      res.redirect("/");
     });
-    res.redirect("/");
+
   } catch (error) {
     switch (error.message) {
       case "Server bug":
@@ -128,12 +131,12 @@ export const postLogin = async (req, res, next) => {
 };
 
 export const postLogout = async (req, res, next) => {
-  const sessionDestroyResult = await req.session.destroy((error) => {
+  req.session.destroy((error) => {
     if (error) {
       error.message = "Server bug";
       error.httpStatusCode = 500;
       return next(error);
     }
+    res.redirect("/");
   });
-  res.redirect("/");
 };
