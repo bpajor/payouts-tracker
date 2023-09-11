@@ -1,21 +1,20 @@
 <script>
   const searchInput = document.getElementById("search-input");
 
-  const rows = document.querySelectorAll(".employee-row");
-
   searchInput.addEventListener("input", () => {
+    const rows = document.querySelectorAll(".employee-row");
     const searchInputValue = searchInput.value.toLowerCase();
     const searchInputFirstPart = searchInputValue.split(" ")[0];
     const searchInputSecondPart = searchInputValue.split(" ")[1];
+    console.log(rows);
 
     rows.forEach((row) => {
       const fullName = row
         .querySelector(".employee-full-name")
         .innerText.toLowerCase();
+      console.log(fullName);
       const firstName = fullName.split(" ")[0];
       const secondName = fullName.split(" ")[1];
-
-      console.log(searchInputFirstPart, ' ', searchInputSecondPart);
 
       if (!searchInputSecondPart) {
         if (
@@ -29,7 +28,7 @@
         }
       }
 
-      if (
+      else if (
         firstName.includes(searchInputFirstPart) &&
         secondName.includes(searchInputSecondPart)
       ) {
@@ -38,7 +37,7 @@
         }
         return;
       }
-      console.log('here');
+      console.log(row);
       row.style.display = "none";
     });
   });

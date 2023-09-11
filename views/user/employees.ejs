@@ -47,7 +47,7 @@
                 </thead>
                 <tbody>
                     <% for (let employee of employees) { %>
-                        <tr class="employee-row">
+                        <tr class="employee-row" id=<%= employee._id %>>
                             <td class="employee-full-name"><%= employee.name %>  <%= employee.surname %></td>
                             <td><%= employee.hourlyRate %></td>
                             <td><%= employee.isDelegation === true ? 'Tak' : 'Nie' %></td>

@@ -60,15 +60,15 @@ app.use((error, req, res, next) => {
     case "Bad email":
     case "Bad password":
     case "Adding employee error":
-    case 'Editing employee error':
-    let pageTitle;
-    if (error.message === 'Adding employee error') {
-      pageTitle = 'Dodaj pracownika'
-    }
-    else {
-      pageTitle =  error.message === "Signup error" ? "Zarejestruj się" : "Zaloguj się";
-    }  
-    const errorContent = error.content;
+    case "Editing employee error":
+      let pageTitle;
+      if (error.message === "Adding employee error") {
+        pageTitle = "Dodaj pracownika";
+      } else {
+        pageTitle =
+          error.message === "Signup error" ? "Zarejestruj się" : "Zaloguj się";
+      }
+      const errorContent = error.content;
       return res.status(error.httpStatusCode).render(error.view, {
         pageTitle: pageTitle,
         errors: errorContent.reasons,
@@ -77,10 +77,15 @@ app.use((error, req, res, next) => {
       });
 
     case "Server bug":
-      console.log('error')
       res
         .status(error.httpStatusCode)
         .render("error/500", { pageTitle: "Błąd Serwera" });
+      break;
+    case "Forbidden operation":
+      console.log(error);
+      res
+        .status(error.httpStatusCode)
+        .render("error/403", { pageTitle: "Nie masz dostępu do tej strony" });
       break;
   }
 });

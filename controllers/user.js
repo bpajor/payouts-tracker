@@ -38,6 +38,11 @@ export const getAddEmployee = (req, res, next) => {
 
 export const getEditEmployee = async (req, res, next) => {
   const foundEmployee = await Employee.findById(req.params.employeeId);
+  if (foundEmployee.bossId.toString() !== req.user._id.toString()) {
+    const error = new Error('Forbidden operation');
+    error.httpStatusCode = 403;
+    return next(error);
+  }
   const { name, surname, hourlyRate, dailyHours, _id } = foundEmployee;
   const oldInput = {
     name,
@@ -80,6 +85,11 @@ export const postEditEmployee = async (req, res, next) => {
 
 export const postDeleteEmployee = async (req, res, next) => {
   const employee = await Employee.findById(req.params.employeeId);
+  if (employee.bossId.toString() !== req.user._id.toString()) {
+    const error = new Error('Forbidden operation');
+    error.httpStatusCode = 403;
+    return next(error);
+  }
   try {
     await employee.deleteOne();
     res.redirect("/employees");
