@@ -102,14 +102,20 @@ export const postDeleteEmployee = async (req, res, next) => {
 };
 
 export const getCampaign = async (req, res, next) => {
-  const presentCampaign = await Campaign.where({ownerId: req.user._id}).findOne();
+  const presentCampaign = await Campaign.where({
+    ownerId: req.user._id,
+  }).findOne();
   let isCampaign = true;
-  console.log(presentCampaign);
   if (!presentCampaign) {
     isCampaign = false;
     return res.render("user/campaign", { pageTitle: "Kampania", isCampaign });
   }
-  res.render("user/campaign", { pageTitle: "Kampania", isCampaign });
+  const endtime = presentCampaign.endtime;
+  res.render("user/campaign", {
+    pageTitle: "Kampania",
+    isCampaign,
+    presentCampaign,
+  });
 };
 
 export const getAddCampaign = (req, res, next) => {
@@ -117,7 +123,9 @@ export const getAddCampaign = (req, res, next) => {
 };
 
 export const postAddCampaign = async (req, res, next) => {
-  const { title, endtime } = req.body;
+  let { title, endtime } = req.body;
+  endtime = new Date(endtime);
+  endtime.setHours(endtime.getHours() + 2);
   const ownerId = req.user._id;
   const newCampaign = new Campaign({
     title,
@@ -127,10 +135,21 @@ export const postAddCampaign = async (req, res, next) => {
   });
   try {
     await newCampaign.addCampaign(ownerId);
-    return res.redirect('/campaign')
-  } 
-  catch (error) {
+    return res.redirect("/campaign");
+  } catch (error) {
     console.log(error);
+    error.httpStatusCode = 500;
+    return next(error);
+  }
+};
+
+export const postDeleteCampaign = async (req, res, next) => {
+  const campaignId = req.params.campaignId;
+  try {
+    const campaign = await Campaign.findById(campaignId);
+    await campaign.deleteOne();
+    return res.redirect("/campaign");
+  } catch (error) {
     error.message = "Server bug";
     error.httpStatusCode = 500;
     return next(error);

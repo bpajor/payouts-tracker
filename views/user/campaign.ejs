@@ -20,7 +20,7 @@
       <% } else {%>
         <div class="campaign-control">
           <div class="message-control">
-              <h1>Do końca kampani pozostało: 25 dni</h1>
+              <h1>Do końca kampani pozostało: <%= presentCampaign.endtime.getDate() - new Date().getDate()%> dni</h1>
               <h2>Bieżące wydatki: 20000 PLN</h2>
           </div>
           <div class="message-control">
@@ -31,9 +31,15 @@
                   <li> Sebix - <span class="italic">10000 PLN</span></li>
               </ol>
               <nav class="campaign-bar">
-                  <a type="button" class="message-item-button">Szczegóły kampanii</a>
-                  <button class="message-item-button">Zakończ kampanię</button>
-                  <button class="message-item-button">Usuń kampanię</button>
+                  <a type="button" class="message-item-button" href="/campaign-details">Szczegóły kampanii</a>
+                  <% if (presentCampaign.endtime.getDate() - new Date().getDate()) {%>
+                    <button class="message-item-button" disabled>Zakończ kampanię</button>
+                  <% } else {%>
+                    <button class="message-item-button" >Zakończ kampanię</button>
+                  <% } %>
+                  <form action="/delete-campaign/<%= presentCampaign._id %>" method="POST">
+                    <button type="submit" class="message-item-button">Usuń kampanię</button>
+                  </form>
               </nav>
           </div>
       </div>

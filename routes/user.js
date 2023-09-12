@@ -1,5 +1,5 @@
 import Express from "express";
-import { getAddCampaign, getAddEmployee, getCampaign, getEditEmployee, getEmployees, getHome, postAddCampaign, postAddEmployee, postDeleteEmployee, postEditEmployee } from "../controllers/user.js";
+import { getAddCampaign, getAddEmployee, getCampaign, getEditEmployee, getEmployees, getHome, postAddCampaign, postAddEmployee, postDeleteCampaign, postDeleteEmployee, postEditEmployee } from "../controllers/user.js";
 import { body } from "express-validator";
 import { isAuth } from "../middleware/is-auth.js";
 
@@ -34,8 +34,10 @@ router.post('/edit-employee/:employeeId', isAuth, postEditEmployee);
 
 router.post('/delete-employee/:employeeId', isAuth, postDeleteEmployee);
 
-router.get('/campaign', getCampaign);
+router.get('/campaign', isAuth, getCampaign);
 
-router.get('/add-campaign', getAddCampaign);
+router.get('/add-campaign', isAuth, getAddCampaign);
 
-router.post('/add-campaign', postAddCampaign);
+router.post('/add-campaign', isAuth, postAddCampaign);
+
+router.post('/delete-campaign/:campaignId', isAuth, postDeleteCampaign);

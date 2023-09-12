@@ -1,3 +1,8 @@
+.campaign-bar {
+  display: flex;
+  gap: 20px
+}
+
 .no-campaign {
   border: 2px solid black;
   margin-top: 200px;
@@ -40,4 +45,20 @@ ol {
   font-style: italic;
   font-weight: 100;
   text-decoration: none;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  background-color: grey;
+}
+
+button:disabled:hover {
+  color: black;
+}
+
+@media screen and (max-width: 670px) {
+    .campaign-control {
+      font-size: 0.7rem;
+      max-width: 400px;
+    }
 }
