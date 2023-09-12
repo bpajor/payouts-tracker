@@ -50,11 +50,13 @@ body {
     text-align: center;
     z-index: 2; /* Ustaw z-index wyżej niż tło */
 }
-
 .message-item-button {
+    display: inline-block;
     border: 2px solid black;
+    font-size: 1.2rem;
     text-decoration: none;
     color: black;
+    height: 51px;
     padding: 10px;
     border-radius: 10px;
     background-color: hsl(0, 0%, 96%);

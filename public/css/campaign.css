@@ -1,0 +1,43 @@
+.no-campaign {
+  border: 2px solid black;
+  margin-top: 200px;
+  padding: 50px;
+  background-color: #faebd7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-flow: column;
+}
+
+p {
+  font-weight: bold;
+}
+
+.campaign-control {
+  margin-top: 20px;
+  display: flex;
+  gap: 20px;
+  flex-flow: column;
+}
+
+.message-control {
+  border: 2px solid black;
+  padding: 20px;
+  background-color: #faebd7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-flow: column;
+}
+
+ol {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.italic {
+  font-style: italic;
+  font-weight: 100;
+  text-decoration: none;
+}

@@ -1,0 +1,29 @@
+<%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="/css/Form.css">
+</head>
+
+<body>
+  <%- include('../includes/logout-overlay.ejs')%>
+  <header>
+    <%- include('../includes/navigation.ejs') %>
+  </header>
+  <main class="auth">
+    <form action="/add-campaign" method="POST" class="form">
+        <p class="title">Dodaj kampanię</p>
+        <div class="form-control">
+            <label for="title" class="form-label">Podaj nazwę kampanii</label>
+            <input class="form-input" type="text" id="title" name="title" required>
+        </div>
+        <div class="form-control">
+            <label for="endTime" class="form-label">Wybierz datę zakończenia kampanii: </label>
+            <input class="form-input" type="date" id="endtime" name="endtime" min="2023-09-12" required>
+        </div>
+        <div class="form-control">
+            <button type="submit" class="message-item-button">Dodaj</button>
+        </div>
+    </form>
+  </main>
+  <%-include('../includes/logout.ejs')%>
+</body>
+
+</html>

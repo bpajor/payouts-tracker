@@ -1,6 +1,7 @@
 import { validationResult } from "express-validator";
 import { Employee } from "../models/employee.js";
 import postAddEditEmployee from "../helpers/employeeAddEdit.js";
+import { Campaign } from "../models/campaign.js";
 
 export const getHome = (req, res, next) => {
   console.log(req.user);
@@ -39,7 +40,7 @@ export const getAddEmployee = (req, res, next) => {
 export const getEditEmployee = async (req, res, next) => {
   const foundEmployee = await Employee.findById(req.params.employeeId);
   if (foundEmployee.bossId.toString() !== req.user._id.toString()) {
-    const error = new Error('Forbidden operation');
+    const error = new Error("Forbidden operation");
     error.httpStatusCode = 403;
     return next(error);
   }
@@ -86,7 +87,7 @@ export const postEditEmployee = async (req, res, next) => {
 export const postDeleteEmployee = async (req, res, next) => {
   const employee = await Employee.findById(req.params.employeeId);
   if (employee.bossId.toString() !== req.user._id.toString()) {
-    const error = new Error('Forbidden operation');
+    const error = new Error("Forbidden operation");
     error.httpStatusCode = 403;
     return next(error);
   }
@@ -94,6 +95,42 @@ export const postDeleteEmployee = async (req, res, next) => {
     await employee.deleteOne();
     res.redirect("/employees");
   } catch (error) {
+    error.message = "Server bug";
+    error.httpStatusCode = 500;
+    return next(error);
+  }
+};
+
+export const getCampaign = async (req, res, next) => {
+  const presentCampaign = await Campaign.where({ownerId: req.user._id}).findOne();
+  let isCampaign = true;
+  console.log(presentCampaign);
+  if (!presentCampaign) {
+    isCampaign = false;
+    return res.render("user/campaign", { pageTitle: "Kampania", isCampaign });
+  }
+  res.render("user/campaign", { pageTitle: "Kampania", isCampaign });
+};
+
+export const getAddCampaign = (req, res, next) => {
+  res.render("user/add-campaign", { pageTitle: "Dodaj kampanię" });
+};
+
+export const postAddCampaign = async (req, res, next) => {
+  const { title, endtime } = req.body;
+  const ownerId = req.user._id;
+  const newCampaign = new Campaign({
+    title,
+    endtime,
+    ownerId,
+    employees: [],
+  });
+  try {
+    await newCampaign.addCampaign(ownerId);
+    return res.redirect('/campaign')
+  } 
+  catch (error) {
+    console.log(error);
     error.message = "Server bug";
     error.httpStatusCode = 500;
     return next(error);

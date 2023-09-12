@@ -1,0 +1,44 @@
+<%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="/css/campaign.css">
+<script
+      src="https://kit.fontawesome.com/5410e8ffe4.js"
+      crossorigin="anonymous"
+    ></script>
+</head>
+
+<body>
+  <%- include('../includes/logout-overlay.ejs')%>
+  <header>
+    <%- include('../includes/navigation.ejs') %>
+  </header>
+    <main class="auth">
+      <% if (!isCampaign) {%>
+      <div class="no-campaign">
+        <p>Kampania nie została rozpoczęta</p>
+        <a type="button" class="message-item-button" href="/add-campaign">Dodaj kampanię</a>
+      </div>
+      <% } else {%>
+        <div class="campaign-control">
+          <div class="message-control">
+              <h1>Do końca kampani pozostało: 25 dni</h1>
+              <h2>Bieżące wydatki: 20000 PLN</h2>
+          </div>
+          <div class="message-control">
+              <h2>Top 3 Opłacanych pracowników: </h2>
+              <ol>
+                  <li> Jan Sławęta - <span class="italic">10000 PLN</span></li>
+                  <li> Krystian Pajor - <span class="italic">10000 PLN</span></li>
+                  <li> Sebix - <span class="italic">10000 PLN</span></li>
+              </ol>
+              <nav class="campaign-bar">
+                  <a type="button" class="message-item-button">Szczegóły kampanii</a>
+                  <button class="message-item-button">Zakończ kampanię</button>
+                  <button class="message-item-button">Usuń kampanię</button>
+              </nav>
+          </div>
+      </div>
+      <% } %>
+    </main>
+    <%-include('../includes/logout.ejs')%>
+</body>
+</html>
