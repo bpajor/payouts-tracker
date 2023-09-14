@@ -36,6 +36,10 @@
   padding: 15px;
 }
 
+#deleg-amount {
+  display: none;
+}
+
 .title {
     font-weight: bold;
     font-size: 2.5rem;

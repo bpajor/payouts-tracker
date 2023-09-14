@@ -1,0 +1,39 @@
+<%- include('../includes/head.ejs') %>
+<script
+      src="https://kit.fontawesome.com/5410e8ffe4.js"
+      crossorigin="anonymous"
+    ></script>
+<link rel="stylesheet" href="/css/employee-details.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+
+</head>
+
+<body>
+    <%- include('../includes/logout-overlay.ejs')%>
+    <header>
+      <%- include('../includes/navigation.ejs') %>
+    </header>
+    <main class="auth">
+        <div class="employee-control">
+            <div class="title-control">
+                <img src="/css/blank-profile-picture-973460_640.png" alt="User image">
+                <p class="full-name">Jan Sławęta</p>
+            </div>
+            <input type="text" id="datepicker" placeholder="Wybierz daty" data-multiple readonly>
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        flatpickr('#datepicker', {
+          mode: 'multiple',
+          dateFormat: 'Y-m-d',
+          inline: true,
+          onChange: function(selectedDates, dateStr, instance) {
+     console.log("Kliknięto datę:", dateStr);
+  }
+        });
+      });
+    </script>
+</body>

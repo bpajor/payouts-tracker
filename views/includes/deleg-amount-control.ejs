@@ -1,0 +1,16 @@
+<script>
+    const delegAmountDiv = document.getElementById('deleg-amount');
+    const delegSelect = document.getElementById('isDelegation');
+
+    delegSelect.addEventListener('change', function(){
+        const delegSelectValue = this.value;
+        if (delegSelectValue === 'yes') {
+            delegAmountDiv.style.display = 'flex';
+            delegAmountDiv.children[1].disabled = false;
+            console.log(delegAmountDiv.children[1]);
+            return;
+        }
+        delegAmountDiv.style.display = 'none'
+        delegAmountDiv.lastChild.disabled = true;
+    })
+</script>

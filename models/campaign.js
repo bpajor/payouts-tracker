@@ -21,7 +21,7 @@ const campaignSchema = new Schema({
     {
       employeeId: {
         type: Schema.Types.ObjectId,
-        ref: "User",
+        ref: "Employee",
       },
       workdays: [
         {

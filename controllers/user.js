@@ -50,6 +50,7 @@ export const getEditEmployee = async (req, res, next) => {
     surname,
     hourlyRate,
     dailyHours,
+    delegationAmount: foundEmployee.delegationAmount,
     id: _id.toString(),
   };
   console.log(oldInput);
@@ -154,4 +155,31 @@ export const postDeleteCampaign = async (req, res, next) => {
     error.httpStatusCode = 500;
     return next(error);
   }
+};
+
+export const getCampaignDetails = async (req, res, next) => {
+  const presentCampaign = await Campaign.where({
+    ownerId: req.user._id,
+  })
+    .findOne()
+    .populate("employeesData.employeeId");
+  res.render("user/campaign-details", {
+    pageTitle: "Szczegóły kampanii",
+    employees: presentCampaign.employeesData,
+  });
+};
+
+export const getEmployeeDetails = async (req, res, next) => {
+  const presentCampaign = await Campaign.where({
+    ownerId: req.user._id,
+  })
+    .findOne()
+    .populate("employeesData.employeeId");
+  let employee;
+  presentCampaign.employeesData.forEach((emp) => {
+    if (emp.employeeId._id.toString() === req.params.employeeId.toString()) {
+      employee = { ...emp["_doc"] };
+    }
+  });
+  res.render("user/employee-details", { pageTitle: "Sczegóły pracownika" });
 };

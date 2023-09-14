@@ -9,7 +9,6 @@
     </header>
     <main class="auth">
         <% if (employees) {%>
-        <a class="message-item-button btn-employees" href="/add-employee">Dodaj pracownika</a>
         <div class="table-control">
         <table>
                 <thead>
@@ -21,8 +20,8 @@
                                 <option>-</option>
                                 <option>Alfabetycznie (rosnąco)</option>
                                 <option>Alfabetycznie (malejąco)</option>
-                                <option>Wg stawki (rosnąco)</option>
-                                <option>Wg stawki (malejąco)</option>
+                                <option>Wg zarobionych pieniędzy (rosnąco)</option>
+                                <option>Wg zarobionych pieniędzy (malejąco)</option>
                             </select>
                         </div>
                     </td>
@@ -38,27 +37,19 @@
                 <thead>
                         <tr>
                             <th>Imię i nazwisko</th>
-                            <th>Stawka za godzinę</th>
-                            <th>Czy delegacja</th>
-                            <th>Godzin na dzień</th>
-                            <th>Edytuj</th>
-                            <th>Usuń</th>
+                            <th>Zarobione pieniędze</th>
+                            <th>Ilość dni w pracy</th>
+                            <th>Szczegóły pracownika</th>
                         </tr>
                 </thead>
                 <tbody>
                     <% for (let employee of employees) { %>
                         <tr class="employee-row" id=<%= employee._id %>>
-                            <td class="employee-full-name"><%= employee.name %>  <%= employee.surname %></td>
-                            <td><%= employee.hourlyRate %></td>
-                            <td><%= employee.isDelegation === true ? 'Tak' : 'Nie' %> <%=`${employee.delegationAmount ? `(${employee.delegationAmount} zł/dzień)` : ''}`%></td>
-                            <td><%= employee.dailyHours %></td>
+                            <td class="employee-full-name"><%= employee.employeeId.name %>  <%= employee.employeeId.surname %></td>
+                            <td>2000 PLN</td>
+                            <td>12</td>
                             <td>
-                                <a type="button" class="btn-employee" href="/edit-employee/<%= employee._id %>">Edytuj</a>
-                            </td>  
-                            <td>
-                                <form action="/delete-employee/<%= employee._id %>" method="POST">
-                                    <button type="submit" class="btn-employee">Usuń</button>
-                                </form>
+                                <a type="button" class="btn-employee" href='/employee-details/<%= employee.employeeId._id%>'>Szczegóły pracownika</a>
                             </td>
                         </tr>
                     <% } %>

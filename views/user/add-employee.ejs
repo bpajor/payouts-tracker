@@ -39,9 +39,13 @@
         <div class="form-control">
             <label for="isDelegation" class="form-label">Czy delegacja?</label>
             <select name="isDelegation" id="isDelegation" class="deleg-select">
-                <option value="yes">Tak</option>
                 <option value="no">Nie</option>
+                <option value="yes">Tak</option>
             </select>
+        </div>
+        <div class="form-control" id="deleg-amount">
+          <label for="delegationAmount" class="form-label">Podaj wartość dodanej płacy dziennie za delegację</label>
+          <input class="form-input" type="number" id="delegationAmount" name="delegationAmount" step="1" min="1" disabled>
         </div>
         <div class="form-control">
             <label for="hours" class="form-label">Podaj ile godzin pracownik wyrabia dziennie</label>
@@ -53,6 +57,7 @@
     </form>
   </main>
   <%-include('../includes/logout.ejs')%>
+  <%- include('../includes/deleg-amount-control.ejs')%>
   <script>
      const isNameOrSurname = (name) => {
         return /^[a-zA-ZąĄćĆęĘłŁńŃóÓśŚźŹżŻ]+$/.test(name);

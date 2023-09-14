@@ -19,6 +19,9 @@ const employeeSchema = new Schema({
     type: Boolean,
     required: true,
   },
+  delegationAmount: {
+    type: Number,
+  },
   dailyHours: {
     type: Number,
     required: true,

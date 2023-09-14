@@ -5,8 +5,12 @@ const postAddEditEmployee = async (req, res, next, errors, mode) => {
   const surname = req.body.surname;
   const hourlyRate = req.body.rate;
   const isDelegation = req.body.isDelegation === "yes" ? true : false;
+  const delegationAmount = req.body.delegationAmount;
   const dailyHours = req.body.hours;
   const oldInput = { name, surname, hourlyRate, dailyHours };
+  if (delegationAmount) {
+    oldInput.delegationAmount = delegationAmount;
+  }
   if (!errors.isEmpty()) {
     const error = new Error(
       mode === "Add" ? "Adding employee error" : "Editing employee error"
@@ -29,6 +33,9 @@ const postAddEditEmployee = async (req, res, next, errors, mode) => {
       dailyHours,
       bossId: req.user._id,
     });
+    if (delegationAmount) {
+      employee.delegationAmount = delegationAmount;
+    }
   } else {
     employee = await Employee.findById(req.params.employeeId);
     employee.name = name;
@@ -36,6 +43,9 @@ const postAddEditEmployee = async (req, res, next, errors, mode) => {
     employee.hourlyRate = hourlyRate;
     employee.isDelegation = isDelegation;
     employee.dailyHours = dailyHours;
+    if (delegationAmount) {
+      employee.delegationAmount = delegationAmount;
+    }
   }
   await employee.save();
   res.redirect("/employees");
