@@ -20,7 +20,7 @@
       <% } else {%>
         <div class="campaign-control">
           <div class="message-control">
-              <h1>Do końca kampani pozostało: <%= presentCampaign.endtime.getDate() - new Date().getDate()%> dni</h1>
+              <h1>Do końca kampani pozostało: <%= Math.ceil((presentCampaign.endtime- new Date())/(1000*3600*24))%> dni</h1>
               <h2>Bieżące wydatki: 20000 PLN</h2>
           </div>
           <div class="message-control">

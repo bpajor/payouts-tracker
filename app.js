@@ -87,6 +87,14 @@ app.use((error, req, res, next) => {
         .status(error.httpStatusCode)
         .render("error/403", { pageTitle: "Nie masz dostępu do tej strony" });
       break;
+    case "Employee not found":
+      console.log('in error')
+      res
+        .status(error.httpStatusCode)
+        .render("error/404", {
+          pageTitle: "Użytkownik nie istnieje",
+          message: "Ten użytkownik nie istnieje...",
+        });
   }
 });
 

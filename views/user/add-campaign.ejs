@@ -16,7 +16,7 @@
         </div>
         <div class="form-control">
             <label for="endTime" class="form-label">Wybierz datę zakończenia kampanii: </label>
-            <input class="form-input" type="date" id="endtime" name="endtime" min="2023-09-12" required>
+            <input class="form-input" type="date" id="endtime" name="endtime" min="<%= `${new Date().getFullYear()}-${(new Date().getMonth() + 1).toString().padStart(2, '0')}-${new Date().getDate().toString().padStart(2, '0')}`%>" max="<%= `${new Date(new Date().setDate(new Date().getDate() + 30)).getFullYear()}-${(new Date(new Date().setDate(new Date().getDate() + 30)).getMonth() + 1).toString().padStart(2, '0')}-${new Date(new Date().setDate(new Date().getDate() + 30)).getDate().toString().padStart(2, '0')}`%>"required>
         </div>
         <div class="form-control">
             <button type="submit" class="message-item-button">Dodaj</button>

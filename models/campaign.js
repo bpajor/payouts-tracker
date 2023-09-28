@@ -25,7 +25,7 @@ const campaignSchema = new Schema({
       },
       workdays: [
         {
-          type: Number,
+          type: String,
         },
       ],
     },

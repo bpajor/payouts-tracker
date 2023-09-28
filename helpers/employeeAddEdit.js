@@ -1,6 +1,10 @@
+import { ObjectId } from "mongodb";
 import { Employee } from "../models/employee.js";
 
 const postAddEditEmployee = async (req, res, next, errors, mode) => {
+  if (!ObjectId.isValid(req.params.employeeId)) {
+    throw new Error("Employee not found");
+  }
   const name = req.body.name;
   const surname = req.body.surname;
   const hourlyRate = req.body.rate;
@@ -38,6 +42,9 @@ const postAddEditEmployee = async (req, res, next, errors, mode) => {
     }
   } else {
     employee = await Employee.findById(req.params.employeeId);
+    if (!employee) {
+      throw new Error("Employee not found");
+    }
     employee.name = name;
     employee.surname = surname;
     employee.hourlyRate = hourlyRate;

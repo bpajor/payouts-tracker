@@ -16,6 +16,10 @@ p {
     text-align: center;
 }
 
+.not-found {
+    margin-bottom: 10px;
+}
+
 .refresh {
     border: 2px solid black;
     background-color: RGBA(255, 161, 49);
@@ -27,6 +31,18 @@ p {
     border-radius: 4px;
     text-decoration: none;
     color: rgb(30, 48, 80);
+}
+
+.redirect {
+    border: 2px solid black;
+    background-color: RGBA(255, 161, 49);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    text-decoration: none;
+    color: rgb(30, 48, 80);
+    padding: 25px;
 }
 
 .fa-bug {

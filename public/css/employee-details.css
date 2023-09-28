@@ -8,6 +8,16 @@
     margin-top: 50px;
 }
 
+.emp-details-bar {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.employee-details {
+    width: 100%;
+}
+
 .flatpickr-input[type="text"] {
     color: white;
     display: none;
@@ -19,6 +29,13 @@
     width: 100%;
 }
  
+.date-control {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 img {
     border: 2px solid black;
 }
@@ -30,4 +47,32 @@ img {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+@media screen and (max-width: 850px) {
+    img {
+        display: none;
+    }
+
+    .full-name {
+        width: 100%;
+        font-size: 1.5rem;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    .employee-details {
+        width: 100%;
+    }
+
+    table {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 550px) {
+    .employee-control {
+        width: 100%;
+        margin: 0;
+    }
 }

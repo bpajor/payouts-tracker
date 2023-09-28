@@ -1,5 +1,5 @@
 import Express from "express";
-import { getAddCampaign, getAddEmployee, getCampaign, getCampaignDetails, getEditEmployee, getEmployeeDetails, getEmployees, getHome, postAddCampaign, postAddEmployee, postDeleteCampaign, postDeleteEmployee, postEditEmployee } from "../controllers/user.js";
+import { getAddCampaign, getAddEmployee, getCampaign, getCampaignDetails, getEditEmployee, getEmployeeDetails, getEmployees, getHome, postAddCampaign, postAddEmployee, postDeleteCampaign, postDeleteEmployee, postEditEmployee, postUpdateEmployeeWorkdays } from "../controllers/user.js";
 import { body } from "express-validator";
 import { isAuth } from "../middleware/is-auth.js";
 
@@ -45,3 +45,5 @@ router.post('/delete-campaign/:campaignId', isAuth, postDeleteCampaign);
 router.get('/campaign-details', isAuth, getCampaignDetails);
 
 router.get('/employee-details/:employeeId', isAuth, getEmployeeDetails);
+
+router.post('/update-workdays/:employeeId', postUpdateEmployeeWorkdays);

@@ -3,6 +3,7 @@
       src="https://kit.fontawesome.com/5410e8ffe4.js"
       crossorigin="anonymous"
     ></script>
+<link rel="stylesheet" href="/css/employees.css">
 <link rel="stylesheet" href="/css/employee-details.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
@@ -18,18 +19,66 @@
         <div class="employee-control">
             <div class="title-control">
                 <img src="/css/blank-profile-picture-973460_640.png" alt="User image">
-                <p class="full-name">Jan Sławęta</p>
+                <p class="full-name"><%= employee.employeeId.name + " " + employee.employeeId.surname%></p>
             </div>
-            <input type="text" id="datepicker" placeholder="Wybierz daty" data-multiple readonly>
+            <div class="table-control employee-details">
+              <table>
+                  <thead>
+                    <tr>
+                      <th>Zarobione pieniądze (PLN)</th>
+                      <th>Dni w pracy</th>
+                      <th>Stawka na godzinę (PLN)</th>
+                      <th>Czy delegacja</th>
+                      <th>Godzin na dzień</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><%= (employee.employeeId.hourlyRate * employee.employeeId.dailyHours * employee.workdays.length + (employee.employeeId.isDelegation ? employee.employeeId.delegationAmount*employee.workdays.length : 0)) %></td>
+                      <td><%= employee.workdays.length %></td>
+                      <td><%= employee.employeeId.hourlyRate%></td>
+                      <td><%= employee.employeeId.isDelegation ? `Tak (${employee.employeeId.delegationAmount} PLN)` : 'Nie'%></td>
+                      <td><%= employee.employeeId.dailyHours%></td>
+                    </tr>
+                  </tbody>
+              </table>
+            </div>
+            <form action="/update-workdays/<%= employee.employeeId._id%>" method="POST">
+              <div class="date-control">
+                <input type="text" id="datepicker" name="dates" placeholder="dates" data-multiple readonly>
+              </div>
+              <nav class="emp-details-bar">
+                <a type="button" class="message-item-button" href="/edit-employee/<%= employee.employeeId._id%>">Edytuj dane</a>
+                <button class="message-item-button" type="submit">Aktualizuj dni pracy</button>
+              </nav>
+            </form>
         </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
+      const minDate = new Date('<%= campaignEndTime.toISOString() %>');
+      minDate.setDate(<%= campaignEndTime.getDate() - 30 %>);
+
+      const minDateYear = minDate.getFullYear()
+      const maxDateYear = <%= campaignEndTime.getFullYear()%> 
+
+      const minDateMonth = (minDate.getMonth() + 1).toString().padStart(2, '0');
+      const maxDateMonth = <%= (campaignEndTime.getMonth() + 1).toString().padStart(2, '0')%>;
+
+      const minDateDay = minDate.getDate().toString().padStart(2, '0');
+      const maxDateDay = <%= campaignEndTime.getDate().toString().padStart(2, '0')%> 
+
+      const workdaysStrings = <%- JSON.stringify(employee.workdays) %>;
+      const workdaysDates = workdaysStrings.map(dateString => new Date(dateString));
+
       document.addEventListener('DOMContentLoaded', function() {
         flatpickr('#datepicker', {
           mode: 'multiple',
           dateFormat: 'Y-m-d',
           inline: true,
+          minDate: `${minDateYear}-${minDateMonth}-${minDateDay}`,
+          maxDate: `${maxDateYear}-${maxDateMonth}-${maxDateDay}`,
+          defaultDate: workdaysDates,
           onChange: function(selectedDates, dateStr, instance) {
      console.log("Kliknięto datę:", dateStr);
   }
