@@ -37,15 +37,15 @@
             <input class="form-input" type="number" id="rate" name="rate" min="0" step="0.01" value="<%= oldInput ? oldInput.hourlyRate : '' %>">
         </div>
         <div class="form-control">
-            <label for="isDelegation" class="form-label">Czy delegacja?</label>
-            <select name="isDelegation" id="isDelegation" class="deleg-select">
+            <label for="isDriver" class="form-label">Czy pracownik będzie kierowcą?</label>
+            <select name="isDriver" id="isDriver" class="driver-select">
                 <option value="no">Nie</option>
                 <option value="yes">Tak</option>
             </select>
         </div>
-        <div class="form-control" id="deleg-amount">
-          <label for="delegationAmount" class="form-label">Podaj wartość dodanej płacy dziennie za delegację</label>
-          <input class="form-input" type="number" id="delegationAmount" name="delegationAmount" step="1" min="1" disabled>
+        <div class="form-control" id="driver-amount" style="display: none;">
+          <label for="driverAmount" class="form-label">Podaj wartość dodanej płacy dziennie za bycie kierowcą</label>
+          <input class="form-input" type="number" id="driverAmount" name="driverAmount" step="1" min="1" disabled>
         </div>
         <div class="form-control">
             <label for="hours" class="form-label">Podaj ile godzin pracownik wyrabia dziennie</label>
@@ -57,7 +57,7 @@
     </form>
   </main>
   <%-include('../includes/logout.ejs')%>
-  <%- include('../includes/deleg-amount-control.ejs')%>
+  <%- include('../includes/driver-amount-control.ejs')%>
   <script>
      const isNameOrSurname = (name) => {
         return /^[a-zA-ZąĄćĆęĘłŁńŃóÓśŚźŹżŻ]+$/.test(name);

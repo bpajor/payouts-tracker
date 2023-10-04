@@ -17,7 +17,8 @@
     </header>
     <main class="auth">
         <div class="employee-control">
-            <div class="title-control">
+            <div class="info-control">
+              <div class="title-control">
                 <img src="/css/blank-profile-picture-973460_640.png" alt="User image">
                 <p class="full-name"><%= employee.employeeId.name + " " + employee.employeeId.surname%></p>
             </div>
@@ -34,8 +35,8 @@
                   </thead>
                   <tbody>
                     <tr>
-                      <td><%= (employee.employeeId.hourlyRate * employee.employeeId.dailyHours * employee.workdays.length + (employee.employeeId.isDelegation ? employee.employeeId.delegationAmount*employee.workdays.length : 0)) %></td>
-                      <td><%= employee.workdays.length %></td>
+                      <td><%=employee.monthSalary%></td>
+                      <td><%= employee.workdays.daysNormal.length + employee.workdays.daysDelegation.length %></td>
                       <td><%= employee.employeeId.hourlyRate%></td>
                       <td><%= employee.employeeId.isDelegation ? `Tak (${employee.employeeId.delegationAmount} PLN)` : 'Nie'%></td>
                       <td><%= employee.employeeId.dailyHours%></td>
@@ -43,9 +44,16 @@
                   </tbody>
               </table>
             </div>
+            </div>
+            
             <form action="/update-workdays/<%= employee.employeeId._id%>" method="POST">
               <div class="date-control">
-                <input type="text" id="datepicker" name="dates" placeholder="dates" data-multiple readonly>
+                <p class="days-selection-msg">Zaznacz dni na delegacji: </p>
+                <input type="text" id="datepicker-delegation" name="datesDelegation" placeholder="dates" data-multiple readonly>
+              </div>
+              <div class="date-control">
+                <p class="days-selection-msg">Zaznacz pozostałe dni: </p>
+                <input type="text" id="datepicker-normal" name="datesNormal" placeholder="dates" data-multiple readonly>
               </div>
               <nav class="emp-details-bar">
                 <a type="button" class="message-item-button" href="/edit-employee/<%= employee.employeeId._id%>">Edytuj dane</a>
@@ -68,21 +76,39 @@
       const minDateDay = minDate.getDate().toString().padStart(2, '0');
       const maxDateDay = <%= campaignEndTime.getDate().toString().padStart(2, '0')%> 
 
-      const workdaysStrings = <%- JSON.stringify(employee.workdays) %>;
-      const workdaysDates = workdaysStrings.map(dateString => new Date(dateString));
+      const normalWorkdaysStrings = <%- JSON.stringify(employee.workdays.daysNormal) %>;
+      const normalWorkdaysDates = normalWorkdaysStrings.map(dateString => new Date(dateString));
+      
+      const delegationWorkdaysStrings = <%-JSON.stringify(employee.workdays.daysDelegation)%>;
+      const delegationWorkdaysDates = delegationWorkdaysStrings.map(dateString => new Date(dateString));
 
       document.addEventListener('DOMContentLoaded', function() {
-        flatpickr('#datepicker', {
-          mode: 'multiple',
-          dateFormat: 'Y-m-d',
-          inline: true,
-          minDate: `${minDateYear}-${minDateMonth}-${minDateDay}`,
-          maxDate: `${maxDateYear}-${maxDateMonth}-${maxDateDay}`,
-          defaultDate: workdaysDates,
-          onChange: function(selectedDates, dateStr, instance) {
-     console.log("Kliknięto datę:", dateStr);
-  }
-        });
-      });
+  const normalDatePicker = flatpickr('#datepicker-normal', {
+    mode: 'multiple',
+    dateFormat: 'Y-m-d',
+    inline: true,
+    minDate: `${minDateYear}-${minDateMonth}-${minDateDay}`,
+    maxDate: `${maxDateYear}-${maxDateMonth}-${maxDateDay}`,
+    defaultDate: normalWorkdaysDates,
+    disable: delegationWorkdaysDates,
+    onChange: function(selectedBasicDates, dateStr, instance) {
+      delegationDatePicker.set('disable', selectedBasicDates);
+    }
+  });
+
+  const delegationDatePicker = flatpickr('#datepicker-delegation', {
+    mode: 'multiple',
+    dateFormat: 'Y-m-d',
+    inline: true,
+    minDate: `${minDateYear}-${minDateMonth}-${minDateDay}`,
+    maxDate: `${maxDateYear}-${maxDateMonth}-${maxDateDay}`,
+    defaultDate: delegationWorkdaysDates,
+    disable: normalWorkdaysDates,
+    onChange: function(selectedDelegationDates, dateStr, instance) {
+      normalDatePicker.set('disable', selectedDelegationDates);
+    }
+  });
+
+});
     </script>
 </body>

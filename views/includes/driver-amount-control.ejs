@@ -1,0 +1,15 @@
+<script>
+    const driverAmountDiv = document.getElementById('driver-amount');
+    const driverSelect = document.getElementById('isDriver');
+
+    driverSelect.addEventListener('change', function(){
+        const driverSelectValue = this.value;
+        if (driverSelectValue === 'yes') {
+            driverAmountDiv.style.display = 'flex';
+            driverAmountDiv.children[1].disabled = false;
+            return;
+        }
+        driverAmountDiv.style.display = 'none'
+        driverAmountDiv.lastChild.disabled = true;
+    })
+</script>

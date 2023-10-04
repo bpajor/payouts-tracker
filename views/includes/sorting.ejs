@@ -2,6 +2,7 @@
 
     const employees = <%- JSON.stringify(employees)%>;
     const select = document.getElementById('sort-select');
+    console.log(select.name);
 
     function renderTable() {
       let existingTBody = document.querySelector('tbody');
@@ -24,16 +25,27 @@
       let thead = document.createElement('thead');
       let tbody = document.createElement('tbody');
 
-      thead.innerHTML = `
+      if (select.name !== 'campaign-details') {
+        thead.innerHTML = `
           <tr>
               <th>Imię i nazwisko</th>
               <th>Stawka za godzinę</th>
-              <th>Czy delegacja</th>
+              <th>Czy kierowca</th>
               <th>Godzin na dzień</th>
               <th>Edytuj</th>
               <th>Usuń</th>
           </tr>
       `;
+      } else {
+        thead.innerHTML = `
+        <tr>
+            <th>Imię i nazwisko</th>
+            <th>Zarobione pieniędze</th>
+            <th>Ilość dni w pracy</th>
+            <th>Szczegóły pracownika</th>
+        </tr>
+      `;
+      }
 
       newTable.appendChild(thead);
 
@@ -45,12 +57,13 @@
 
       for (let employee of employees) {
         let row;
+        if (select.name !== 'campaign-details') {
         if (!ids.includes(employee._id)) {
             row = `
               <tr class='employee-row' id=${employee._id} style='display:none'>
                   <td class='employee-full-name'>${employee.name} ${employee.surname}</td>
                   <td>${employee.hourlyRate}</td>
-                  <td>${employee.isDelegation === true ? 'Tak' : 'Nie'}</td>
+                  <td>${employee.isDriver === true ? 'Tak' : 'Nie'} ${employee.driverAmount ? `(${employee.driverAmount} zł)` : ''}</td>
                   <td>${employee.dailyHours}</td>
                   <td>
                       <a type="button" class="btn-employee" href="/edit-employee/${employee._id}">Edytuj</a>
@@ -68,7 +81,7 @@
               <tr class='employee-row' id=${employee._id}>
                   <td class='employee-full-name'>${employee.name} ${employee.surname}</td>
                   <td>${employee.hourlyRate}</td>
-                  <td>${employee.isDelegation === true ? 'Tak' : 'Nie'}</td>
+                  <td>${employee.isDriver === true ? 'Tak' : 'Nie'} ${employee.driverAmount ? `(${employee.driverAmount} zł)` : ''}</td>
                   <td>${employee.dailyHours}</td>
                   <td>
                       <a type="button" class="btn-employee" href="/edit-employee/${employee._id}">Edytuj</a>
@@ -83,7 +96,34 @@
             }
           tbody.innerHTML += row;
       }
-
+    else {
+        if (!ids.includes(employee._id)) {
+            row = `
+              <tr class='employee-row' id=${employee._id} style='display:none'>
+                  <td class='employee-full-name'>${employee.name} ${employee.surname}</td>
+                  <td>${employee.monthSalary}</td>
+                  <td>${employee.workdays.daysNormal.length + employee.workdays.daysDelegation.length} (${employee.workdays.daysDelegation.length} w delegacji)</td>
+                  <td>
+                    <a type="button" class="btn-employee" href='/employee-details/${employee._id}'>Szczegóły pracownika</a>
+                  </td>
+              </tr>
+          `;
+        }
+        else {
+            row = `
+            <tr class='employee-row' id=${employee._id}>
+                  <td class='employee-full-name'>${employee.name} ${employee.surname}</td>
+                  <td>${employee.monthSalary}</td>
+                  <td>${employee.workdays.daysNormal.length + employee.workdays.daysDelegation.length} (${employee.workdays.daysDelegation.length} w delegacji)</td>
+                  <td>
+                    <a type="button" class="btn-employee" href='/employee-details/${employee._id}'>Szczegóły pracownika</a>
+                  </td>
+              </tr>
+          `;
+            }
+          tbody.innerHTML += row;
+      }
+    }
       newTable.appendChild(tbody);
 
       let tableControl = document.querySelector('.table-control');
@@ -124,6 +164,18 @@
           case 'Wg stawki (malejąco)':
               employees.sort((a,b) => {
                   return b.hourlyRate - a.hourlyRate;
+              })
+              break;
+
+          case 'Wg zarobionych pieniędzy (rosnąco)':
+              employees.sort((a,b) => {
+                  return a.monthSalary - b.monthSalary;
+              })
+              break;
+
+          case 'Wg zarobionych pieniędzy (malejąco)':
+              employees.sort((a,b) => {
+                  return b.monthSalary - a.monthSalary;
               })
               break;
         }

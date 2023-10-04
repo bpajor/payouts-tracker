@@ -39,7 +39,7 @@
                         <tr>
                             <th>Imię i nazwisko</th>
                             <th>Stawka za godzinę</th>
-                            <th>Czy delegacja</th>
+                            <th>Czy kierowca</th>
                             <th>Godzin na dzień</th>
                             <th>Edytuj</th>
                             <th>Usuń</th>
@@ -50,7 +50,7 @@
                         <tr class="employee-row" id=<%= employee._id %>>
                             <td class="employee-full-name"><%= employee.name %>  <%= employee.surname %></td>
                             <td><%= employee.hourlyRate %></td>
-                            <td><%= employee.isDelegation === true ? 'Tak' : 'Nie' %> <%=`${employee.delegationAmount ? `(${employee.delegationAmount} zł/dzień)` : ''}`%></td>
+                            <td><%= employee.isDriver === true ? 'Tak' : 'Nie' %> <%=`${employee.driverAmount ? `(${employee.driverAmount} zł)` : ''}`%></td>
                             <td><%= employee.dailyHours %></td>
                             <td>
                                 <a type="button" class="btn-employee" href="/edit-employee/<%= employee._id %>">Edytuj</a>

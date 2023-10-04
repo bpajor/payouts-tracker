@@ -1,11 +1,14 @@
 .employee-control {
     border: 2px solid black;
-    padding: 20px;
     background-color: #faebd7;
     display: flex;
     flex-flow: column;
     width: 60%;
     margin-top: 50px;
+}
+
+.info-control {
+    padding: 20px;
 }
 
 .emp-details-bar {
@@ -31,9 +34,17 @@
  
 .date-control {
     margin-top: 20px;
+    padding-bottom: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-flow: column;
+    border-bottom: 2px solid black;
+    width: 100%;
+}
+
+.days-selection-msg {
+    font-size: 1.5rem;
 }
 
 img {

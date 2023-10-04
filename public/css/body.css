@@ -4,26 +4,28 @@
     box-sizing: border-box;
   }
 
-html, body {
+  html, body {
     height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    background-image: url('money-2696219_1920.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    margin: 0;
-    padding: 0;
     font-family: "Open Sans", sans-serif;
+    overflow: auto; 
 }
 
 .not-auth, .auth {
     display: flex;
     flex-flow: column;
-    justify-content: center;
     align-items: center;
+    background-image: url('money-2696219_1920.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 91.9%;
 }
+
 
 #overlay {
     display: none;

@@ -15,11 +15,11 @@ const employeeSchema = new Schema({
     type: Number,
     required: true,
   },
-  isDelegation: {
+  isDriver: {
     type: Boolean,
     required: true,
   },
-  delegationAmount: {
+  driverAmount: {
     type: Number,
   },
   dailyHours: {

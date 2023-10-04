@@ -9,6 +9,9 @@
     </header>
     <main class="auth">
         <% if (employees) {%>
+        <form action="/update-campaign/<%=campaignId%>" method="POST">
+            <button class="message-item-button" id="update-button">Zaktualizuj pracowników w kampanii</button>
+        </form>
         <div class="table-control">
         <table>
                 <thead>
@@ -16,7 +19,7 @@
                     <td class="option--item">
                         <div class="option--item-control">
                             <p>Sortuj: </p>
-                            <select id="sort-select">
+                            <select id="sort-select" name="campaign-details">
                                 <option>-</option>
                                 <option>Alfabetycznie (rosnąco)</option>
                                 <option>Alfabetycznie (malejąco)</option>
@@ -45,11 +48,11 @@
                 <tbody>
                     <% for (let employee of employees) { %>
                         <tr class="employee-row" id=<%= employee._id %>>
-                            <td class="employee-full-name"><%= employee.employeeId.name %>  <%= employee.employeeId.surname %></td>
-                            <td><%= (employee.employeeId.hourlyRate * employee.employeeId.dailyHours * employee.workdays.length + (employee.employeeId.isDelegation ? employee.employeeId.delegationAmount*employee.workdays.length : 0)) %></td>
-                            <td><%= employee.workdays.length %></td>
+                            <td class="employee-full-name"><%= employee.name %>  <%= employee.surname %></td>
+                            <td><%= employee.monthSalary%></td>
+                            <td><%= employee.workdays.daysNormal.length + employee.workdays.daysDelegation.length%> (<%=employee.workdays.daysDelegation.length%> w delegacji)</td>
                             <td>
-                                <a type="button" class="btn-employee" href='/employee-details/<%= employee.employeeId._id%>'>Szczegóły pracownika</a>
+                                <a type="button" class="btn-employee" href='/employee-details/<%= employee._id%>'>Szczegóły pracownika</a>
                             </td>
                         </tr>
                     <% } %>

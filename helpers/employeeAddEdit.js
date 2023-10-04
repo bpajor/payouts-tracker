@@ -2,18 +2,19 @@ import { ObjectId } from "mongodb";
 import { Employee } from "../models/employee.js";
 
 const postAddEditEmployee = async (req, res, next, errors, mode) => {
-  if (!ObjectId.isValid(req.params.employeeId)) {
+  if (mode === 'Edit' && !ObjectId.isValid(req.params.employeeId)) {
     throw new Error("Employee not found");
   }
+  console.log('not an error')
   const name = req.body.name;
   const surname = req.body.surname;
   const hourlyRate = req.body.rate;
-  const isDelegation = req.body.isDelegation === "yes" ? true : false;
-  const delegationAmount = req.body.delegationAmount;
+  const isDriver = req.body.isDriver === "yes" ? true : false;
+  const driverAmount = req.body.driverAmount;
   const dailyHours = req.body.hours;
   const oldInput = { name, surname, hourlyRate, dailyHours };
-  if (delegationAmount) {
-    oldInput.delegationAmount = delegationAmount;
+  if (driverAmount) {
+    oldInput.driverAmount = driverAmount;
   }
   if (!errors.isEmpty()) {
     const error = new Error(
@@ -33,12 +34,12 @@ const postAddEditEmployee = async (req, res, next, errors, mode) => {
       name,
       surname,
       hourlyRate,
-      isDelegation,
+      isDriver,
       dailyHours,
       bossId: req.user._id,
     });
-    if (delegationAmount) {
-      employee.delegationAmount = delegationAmount;
+    if (driverAmount) {
+      employee.driverAmount = driverAmount;
     }
   } else {
     employee = await Employee.findById(req.params.employeeId);
@@ -48,10 +49,10 @@ const postAddEditEmployee = async (req, res, next, errors, mode) => {
     employee.name = name;
     employee.surname = surname;
     employee.hourlyRate = hourlyRate;
-    employee.isDelegation = isDelegation;
+    employee.isDriver = isDriver;
     employee.dailyHours = dailyHours;
-    if (delegationAmount) {
-      employee.delegationAmount = delegationAmount;
+    if (driverAmount) {
+      employee.driverAmount = driverAmount;
     }
   }
   await employee.save();

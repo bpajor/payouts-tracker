@@ -21,14 +21,14 @@
         <div class="campaign-control">
           <div class="message-control">
               <h1>Do końca kampani pozostało: <%= Math.ceil((presentCampaign.endtime- new Date())/(1000*3600*24))%> dni</h1>
-              <h2>Bieżące wydatki: 20000 PLN</h2>
+              <h2>Bieżące wydatki: <%= allEmpSalarySum %> PLN</h2>
           </div>
           <div class="message-control">
               <h2>Top 3 Opłacanych pracowników: </h2>
               <ol>
-                  <li> Jan Sławęta - <span class="italic">10000 PLN</span></li>
-                  <li> Krystian Pajor - <span class="italic">10000 PLN</span></li>
-                  <li> Sebix - <span class="italic">10000 PLN</span></li>
+                  <% topEmps.forEach(emp => { %>
+                    <li> <%=emp.name%> <%=emp.surname%> - <span class="italic"><%= emp.monthSalary %> PLN</span></li>
+                  <% })%>
               </ol>
               <nav class="campaign-bar">
                   <a type="button" class="message-item-button" href="/campaign-details">Szczegóły kampanii</a>

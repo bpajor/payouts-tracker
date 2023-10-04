@@ -60,8 +60,12 @@ th, td {
 }
 
 .btn-employees {
-    margin-top: 100px;
+    margin-top: 50px;
     padding: 15px;
+}
+
+#update-button {
+    margin-top: 40px;
 }
 
 .btn-employee {

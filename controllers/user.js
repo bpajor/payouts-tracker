@@ -79,10 +79,12 @@ export const getEditEmployee = async (req, res, next) => {
 };
 
 export const postAddEmployee = async (req, res, next) => {
+  console.log(req.params);
   const errors = validationResult(req);
   try {
     await postAddEditEmployee(req, res, next, errors, "Add");
   } catch (error) {
+    console.log(error);
     error.message = "Server bug";
     error.httpStatusCode = 500;
     return next(error);
@@ -110,7 +112,7 @@ export const postDeleteEmployee = async (req, res, next) => {
       throw new Error("Employee not found");
     }
     const employee = await Employee.findById(req.params.employeeId);
-    if (!foundEmployee) {
+    if (!employee) {
       throw new Error("Employee not found");
     }
     if (employee.bossId.toString() !== req.user._id.toString()) {
@@ -121,6 +123,7 @@ export const postDeleteEmployee = async (req, res, next) => {
     await employee.deleteOne();
     res.redirect("/employees");
   } catch (error) {
+    console.log(error);
     error.message = "Server bug";
     error.httpStatusCode = 500;
     return next(error);
@@ -130,17 +133,53 @@ export const postDeleteEmployee = async (req, res, next) => {
 export const getCampaign = async (req, res, next) => {
   const presentCampaign = await Campaign.where({
     ownerId: req.user._id,
-  }).findOne();
+  })
+    .findOne()
+    .populate("employeesData.employeeId");
+  console.log(presentCampaign);
   let isCampaign = true;
   if (!presentCampaign) {
     isCampaign = false;
     return res.render("user/campaign", { pageTitle: "Kampania", isCampaign });
   }
-  const endtime = presentCampaign.endtime;
+  let allEmpSalarySum = 0;
+  const topEmps = [];
+  presentCampaign.employeesData.forEach((employee) => {
+    const monthSalary =
+      employee.employeeId.hourlyRate *
+        employee.employeeId.dailyHours *
+        (employee.workdays.daysNormal.length +
+          employee.workdays.daysDelegation.length) +
+      presentCampaign.delegationAmount *
+        employee.workdays.daysDelegation.length +
+      (employee.employeeId.isDriver ? employee.employeeId.driverAmount : 0);
+    allEmpSalarySum += monthSalary;
+
+    const emp = {
+      name: employee.employeeId.name,
+      surname: employee.employeeId.surname,
+      monthSalary,
+    };
+    if (topEmps.length < 3) {
+      topEmps.push(emp);
+      topEmps.sort((empOne, empTwo) => {
+        return empTwo.monthSalary - empOne.monthSalary;
+      });
+    } else {
+      if (emp.monthSalary > topEmps[2].monthSalary) {
+        topEmps[2] = emp;
+      }
+      topEmps.sort((empOne, empTwo) => {
+        return empTwo.monthSalary - empOne.monthSalary;
+      });
+    }
+  });
   res.render("user/campaign", {
     pageTitle: "Kampania",
     isCampaign,
     presentCampaign,
+    allEmpSalarySum,
+    topEmps,
   });
 };
 
@@ -149,7 +188,7 @@ export const getAddCampaign = (req, res, next) => {
 };
 
 export const postAddCampaign = async (req, res, next) => {
-  let { title, endtime } = req.body;
+  let { title, endtime, delegationAmount } = req.body;
   endtime = new Date(endtime);
   endtime.setHours(endtime.getHours() + 2);
   const ownerId = req.user._id;
@@ -157,6 +196,7 @@ export const postAddCampaign = async (req, res, next) => {
     title,
     endtime,
     ownerId,
+    delegationAmount,
     employees: [],
   });
   try {
@@ -169,6 +209,17 @@ export const postAddCampaign = async (req, res, next) => {
   }
 };
 
+export const postUpdateCampaign = async (req, res, next) => {
+  const campaignId = req.params.campaignId;
+  try {
+    const campaign = await Campaign.findById(campaignId);
+    campaign.updateCampaign(req.user._id);
+  } catch (error) {
+    error.message = "Server bug";
+    error.httpStatusCode = 500;
+    return next(error);
+  }
+};
 export const postDeleteCampaign = async (req, res, next) => {
   const campaignId = req.params.campaignId;
   try {
@@ -189,9 +240,30 @@ export const getCampaignDetails = async (req, res, next) => {
     })
       .findOne()
       .populate("employeesData.employeeId");
+    let employees = [];
+    presentCampaign.employeesData.forEach((employee) => {
+      const employeeToPush = {
+        ...employee.employeeId._doc,
+        workdays: employee.workdays,
+      };
+      employeeToPush.monthSalary =
+        employee.employeeId.hourlyRate *
+          employee.employeeId.dailyHours *
+          (employee.workdays.daysNormal.length +
+            employee.workdays.daysDelegation.length) +
+        presentCampaign.delegationAmount *
+          employee.workdays.daysDelegation.length +
+        (employee.employeeId.isDriver ? employee.employeeId.driverAmount : 0);
+      //   +
+      // // (employee.employeeId.delegationAmount *
+      // //   employee.workdays.daysDelegation.length);
+      employees.push(employeeToPush);
+    });
+    console.log(employees);
     return res.render("user/campaign-details", {
       pageTitle: "Szczegóły kampanii",
-      employees: presentCampaign.employeesData,
+      employees: employees,
+      campaignId: presentCampaign._id,
     });
   } catch (error) {
     error.message = "Server bug";
@@ -218,7 +290,22 @@ export const getEmployeeDetails = async (req, res, next) => {
     if (!employee) {
       throw new Error("Employee not found");
     }
-    console.log(employee);
+    console.log(
+      employee.workdays.daysDelegation.length +
+        employee.workdays.daysNormal.length
+    );
+    employee.monthSalary =
+      employee.employeeId.hourlyRate *
+        employee.employeeId.dailyHours *
+        (employee.workdays.daysNormal.length +
+          employee.workdays.daysDelegation.length) +
+      presentCampaign.delegationAmount *
+        employee.workdays.daysDelegation.length +
+      (employee.employeeId.isDriver ? employee.employeeId.driverAmount : 0);
+    //   +
+    // employee.employeeId.delegationAmount *
+    //   employee.workdays.daysDelegation.length;
+
     const campaignEndTime = presentCampaign.endtime;
     return res.render("user/employee-details", {
       pageTitle: "Sczegóły pracownika",
@@ -237,8 +324,8 @@ export const getEmployeeDetails = async (req, res, next) => {
 };
 
 export const postUpdateEmployeeWorkdays = async (req, res, next) => {
-  const selectedDays = req.body["dates"].split(", ");
-  console.log(selectedDays);
+  const selectedDelegationDays = req.body["datesDelegation"].split(", ");
+  const selectedNormalDays = req.body["datesNormal"].split(", ");
   try {
     const presentCampaign = await Campaign.where({
       ownerId: req.user._id,
@@ -249,10 +336,16 @@ export const postUpdateEmployeeWorkdays = async (req, res, next) => {
     const employeeIndex = presentCampaign.employeesData.findIndex((emp) => {
       return emp.employeeId._id.toString() === req.params.employeeId.toString();
     });
-    presentCampaign.employeesData[employeeIndex].workdays = selectedDays;
+    console.log("Testowy log: ", presentCampaign.employeesData[employeeIndex]);
+    presentCampaign.employeesData[employeeIndex].workdays.daysDelegation = [
+      ...selectedDelegationDays,
+    ];
+    presentCampaign.employeesData[employeeIndex].workdays.daysNormal =
+      selectedNormalDays;
     await presentCampaign.save();
     return res.redirect("/campaign");
   } catch (error) {
+    console.log(error);
     error.message = "Server bug";
     error.httpStatusCode = 500;
     return next(error);
