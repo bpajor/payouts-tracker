@@ -27,7 +27,7 @@ body {
 }
 
 
-#overlay {
+#overlay, #bonus-overlay, #sum-up-overlay {
     display: none;
     position: fixed;
     top: 0;
@@ -38,7 +38,8 @@ body {
     z-index: 1; 
 }
 
-#confirmation-form, #confirmation-deletion-form {
+
+#confirmation-form, .bonus-confirmation-form, #sum-up-form {
     display: none;
     position: fixed;
     top: 50%;

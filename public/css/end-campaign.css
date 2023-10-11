@@ -1,0 +1,12 @@
+.end-campaign-box {
+    text-align: center;
+    width: 800px;
+    margin-top: 50px;
+    border: 2px solid black;
+    padding: 20px;
+    background-color: #faebd7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-flow: column;
+  }

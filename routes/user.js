@@ -1,5 +1,5 @@
 import Express from "express";
-import { getAddCampaign, getAddEmployee, getCampaign, getCampaignDetails, getEditEmployee, getEmployeeDetails, getEmployees, getHome, postAddCampaign, postAddEmployee, postDeleteCampaign, postDeleteEmployee, postEditEmployee, postUpdateCampaign, postUpdateEmployeeWorkdays } from "../controllers/user.js";
+import { getAddCampaign, getAddEmployee, getCampaign, getCampaignDetails, getCreateExcelFile, getEditEmployee, getEmployeeDetails, getEmployees, getEndCampaign, getHome, postAddCampaign, postAddEmployee, postCreateExcelFile, postDeleteCampaign, postDeleteEmployee, postEditEmployee, postUpdateCampaign, postUpdateEmployee } from "../controllers/user.js";
 import { body } from "express-validator";
 import { isAuth } from "../middleware/is-auth.js";
 
@@ -46,6 +46,12 @@ router.get('/campaign-details', isAuth, getCampaignDetails);
 
 router.get('/employee-details/:employeeId', isAuth, getEmployeeDetails);
 
-router.post('/update-workdays/:employeeId', postUpdateEmployeeWorkdays);
+router.post('/update-workdays/:employeeId', isAuth, postUpdateEmployee);
 
-router.post('/update-campaign/:campaignId', postUpdateCampaign);
+router.post('/update-campaign/:campaignId', isAuth, postUpdateCampaign);
+
+router.get('/end-campaign', isAuth, getEndCampaign);
+
+router.get('/create-excel-file', isAuth, getCreateExcelFile);
+
+router.post('/create-excel-file', isAuth , postCreateExcelFile)

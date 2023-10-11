@@ -9,9 +9,6 @@
     </header>
     <main class="auth">
         <% if (employees) {%>
-        <form action="/update-campaign/<%=campaignId%>" method="POST">
-            <button class="message-item-button" id="update-button">Zaktualizuj pracowników w kampanii</button>
-        </form>
         <div class="table-control">
         <table>
                 <thead>
@@ -42,6 +39,7 @@
                             <th>Imię i nazwisko</th>
                             <th>Zarobione pieniędze</th>
                             <th>Ilość dni w pracy</th>
+                            <th>Premia</th>
                             <th>Szczegóły pracownika</th>
                         </tr>
                 </thead>
@@ -51,6 +49,7 @@
                             <td class="employee-full-name"><%= employee.name %>  <%= employee.surname %></td>
                             <td><%= employee.monthSalary%></td>
                             <td><%= employee.workdays.daysNormal.length + employee.workdays.daysDelegation.length%> (<%=employee.workdays.daysDelegation.length%> w delegacji)</td>
+                            <td><%= employee.bonusAmount %></td>
                             <td>
                                 <a type="button" class="btn-employee" href='/employee-details/<%= employee._id%>'>Szczegóły pracownika</a>
                             </td>

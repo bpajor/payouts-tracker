@@ -8,6 +8,10 @@ import { appListen } from "./helpers/listen-app.js";
 import ConnectMongoDBSession from "connect-mongodb-session";
 import session from "express-session";
 import URI from "./URI.js";
+import { Campaign } from "./models/campaign.js";
+import mongoose from "mongoose";
+
+console.log(process.type);
 
 const MongoDBStore = ConnectMongoDBSession(session);
 
@@ -36,16 +40,32 @@ app.use(
 //   next();
 // })
 
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   res.locals.isAuthenticated = req.session.isLoggedIn;
   const loggedInUser = req.session.user;
 
   if (!loggedInUser) {
     return next();
   }
-
-  req.user = loggedInUser;
-  next();
+  try {
+    const presentCampaign = await Campaign.where({
+      ownerId: new mongoose.Types.ObjectId(loggedInUser._id),
+    })
+      .findOne()
+      .populate("employeesData.employeeId");
+    if (presentCampaign) {
+      loggedInUser.campaign = presentCampaign;
+    }
+    // console.log(loggedInUser);
+    req.user = loggedInUser;
+    // console.log(req.user);
+    next();
+  } catch (error) {
+    console.log(error);
+    error.message = "Server bug";
+    error.httpStatusCode = 500;
+    return next(error);
+  }
 });
 
 app.use(userRoutes);
@@ -88,13 +108,11 @@ app.use((error, req, res, next) => {
         .render("error/403", { pageTitle: "Nie masz dostępu do tej strony" });
       break;
     case "Employee not found":
-      console.log('in error')
-      res
-        .status(error.httpStatusCode)
-        .render("error/404", {
-          pageTitle: "Użytkownik nie istnieje",
-          message: "Ten użytkownik nie istnieje...",
-        });
+      console.log("in error");
+      res.status(error.httpStatusCode).render("error/404", {
+        pageTitle: "Użytkownik nie istnieje",
+        message: "Ten użytkownik nie istnieje...",
+      });
   }
 });
 

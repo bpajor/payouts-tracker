@@ -32,7 +32,7 @@
     width: 100%;
 }
  
-.date-control {
+.date-control, .bonus-control {
     margin-top: 20px;
     padding-bottom: 20px;
     display: flex;
@@ -43,7 +43,7 @@
     width: 100%;
 }
 
-.days-selection-msg {
+.days-selection-msg, .bonus-msg {
     font-size: 1.5rem;
 }
 

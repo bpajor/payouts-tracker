@@ -31,6 +31,7 @@
                       <th>Stawka na godzinę (PLN)</th>
                       <th>Czy delegacja</th>
                       <th>Godzin na dzień</th>
+                      <th>Premia (PLN)</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -40,6 +41,7 @@
                       <td><%= employee.employeeId.hourlyRate%></td>
                       <td><%= employee.employeeId.isDelegation ? `Tak (${employee.employeeId.delegationAmount} PLN)` : 'Nie'%></td>
                       <td><%= employee.employeeId.dailyHours%></td>
+                      <td><%=employee.bonusAmount%></td>
                     </tr>
                   </tbody>
               </table>
@@ -55,9 +57,13 @@
                 <p class="days-selection-msg">Zaznacz pozostałe dni: </p>
                 <input type="text" id="datepicker-normal" name="datesNormal" placeholder="dates" data-multiple readonly>
               </div>
+              <div class="bonus-control">
+                <p class="bonus-msg">Podaj ilość premii: </p>
+                <input type="number" name="bonus" id="bonus" value=<%= employee.bonusAmount %>>
+              </div>
               <nav class="emp-details-bar">
-                <a type="button" class="message-item-button" href="/edit-employee/<%= employee.employeeId._id%>">Edytuj dane</a>
-                <button class="message-item-button" type="submit">Aktualizuj dni pracy</button>
+                <a type="button" class="message-item-button" href="/edit-employee/<%= employee.employeeId._id%>">Edytuj dane podstawowe</a>
+                <button class="message-item-button" type="submit">Aktualizuj dane</button>
               </nav>
             </form>
         </div>

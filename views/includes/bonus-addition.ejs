@@ -1,0 +1,46 @@
+<script>
+  const bonusRows = document.getElementById("test");
+
+  const bonusOverlay = document.getElementById("bonus-overlay");
+  const bonusConfirmationForm = document.getElementById("bonus-form");
+
+  function showEditForm(employeeId) {
+    const bonusValue = document
+      .getElementById(employeeId)
+      .querySelector(".bonus").textContent;
+    console.log(bonusValue);
+    document.getElementById("bonus-value").value = bonusValue;
+
+    bonusOverlay.style.display = "block";
+    bonusConfirmationForm.style.display = "flex";
+    bonusConfirmationForm.style.flexFlow = "column";
+    bonusConfirmationForm.style.gap = "30px";
+    document
+      .getElementById("confirm-bonus")
+      .setAttribute("onclick", `editBonus('${employeeId}')`);
+  }
+
+  function editBonus(employeeId) {
+    const bonusValue = document.getElementById("bonus-value").value;
+    const bonusElement = document
+      .getElementById(employeeId)
+      .querySelector(".bonus");
+    bonusElement.textContent = bonusValue;
+
+    bonusOverlay.style.display = "none";
+    bonusConfirmationForm.style.display = "none";
+  }
+
+  // const cancelButton = document.getElementById('cancel-logout');
+
+  const onBonusFormSubmit = () => {
+    const employeeRow = document.getElementById(employeeId);
+    console.log(employeeRow);
+  };
+
+  bonusOverlay.addEventListener("click", () => {
+    bonusOverlay.style.display = "none";
+    bonusConfirmationForm.style.display = "none";
+  });
+
+</script>

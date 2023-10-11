@@ -35,7 +35,7 @@
                   <% if (presentCampaign.endtime.getDate() - new Date().getDate()) {%>
                     <button class="message-item-button" disabled>Zakończ kampanię</button>
                   <% } else {%>
-                    <button class="message-item-button" >Zakończ kampanię</button>
+                    <a type="button" class="message-item-button" href="/end-campaign">Zakończ kampanię</a>
                   <% } %>
                   <form action="/delete-campaign/<%= presentCampaign._id %>" method="POST">
                     <button type="submit" class="message-item-button">Usuń kampanię</button>

@@ -1,0 +1,32 @@
+<script>
+    const sumCampaignButton = document.getElementById('sum-campaign-button');
+
+    const sumUpOverlay = document.getElementById('sum-up-overlay');
+    const sumUpForm = document.getElementById('sum-up-form');
+
+    const cancelExcelButton = document.getElementById('cancel-excel');
+    const confirmExcelButton = document.getElementById('confirm-excel')
+
+    sumCampaignButton.addEventListener('click', () => {
+        sumUpOverlay.style.display = 'block';
+        sumUpForm.style.display = 'block';
+    });
+
+    sumUpOverlay.addEventListener('click', () => {
+      sumUpOverlay.style.display = 'none';
+      sumUpForm.style.display = 'none';
+    })
+
+    cancelExcelButton.addEventListener('click', () => {
+    //   sumUpOverlay.style.display = 'none';
+    //   sumUpForm.style.display = 'none';
+        sumUpForm.action = '/test';
+        sumUpForm.submit();
+    })
+
+    confirmExcelButton.addEventListener('click', () => {
+        sumUpForm.action = '/create-excel-file';
+        sumUpForm.submit();
+    })
+
+  </script>

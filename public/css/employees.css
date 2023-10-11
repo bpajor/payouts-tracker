@@ -68,13 +68,22 @@ th, td {
     margin-top: 40px;
 }
 
+.test {
+    width: auto; 
+}
+
+
 .btn-employee {
     background-color: #B97318;
     border: 2px solid black;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: bold;
     text-decoration: none;
     color: black;
+    padding: 5px;
+    height: 100%;
+    width: 100%;
+    display: block;
 }
 
 .btn-employee:hover {

@@ -1,0 +1,74 @@
+<%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="css/employees.css">
+<link rel="stylesheet" href="css/end-campaign.css">
+<script
+      src="https://kit.fontawesome.com/5410e8ffe4.js"
+      crossorigin="anonymous"
+    ></script>
+</head>
+
+<body>
+  <%- include('../includes/logout-overlay.ejs')%>
+  <%- include('../includes/sum-up-overlay.ejs')%>
+  <header>
+    <%- include('../includes/navigation.ejs') %>
+  </header>
+    <main class="auth">
+        <div class="end-campaign-box">
+            <h1>Sprawdź szczegóły a następnie kliknij w przycisk poniżej</h1>
+            <button class="message-item-button" id="sum-campaign-button">Przejdź dalej</button>
+        </div>
+        <div class="table-control">
+            <table>
+                    <thead>
+                    <tr>
+                        <td class="option--item">
+                            <div class="option--item-control">
+                                <p>Sortuj: </p>
+                                <select id="sort-select" name="campaign-details">
+                                    <option>-</option>
+                                    <option>Alfabetycznie (rosnąco)</option>
+                                    <option>Alfabetycznie (malejąco)</option>
+                                    <option>Wg zarobionych pieniędzy (rosnąco)</option>
+                                    <option>Wg zarobionych pieniędzy (malejąco)</option>
+                                </select>
+                            </div>
+                        </td>
+                        <td class="option--item">
+                            <div class="option--item-control">
+                                <input type="text" placeholder="Szukaj..." id="search-input">
+                            </div>
+                        </td>
+                    </tr>
+                </thead> 
+            </table>
+                <table>
+                    <thead>
+                            <tr>
+                                <th>Imię i nazwisko</th>
+                                <th>Zarobione pieniędze</th>
+                                <th>Premia</th>
+                                <th>Ilość dni w pracy</th>
+                                <th>Szczegóły pracownika</th>
+                            </tr>
+                    </thead>
+                    <tbody id="test">
+                        <% for (let employee of employees) { %>
+                            <tr class="employee-row" id=<%=employee.randomId%>>
+                                <td class="employee-full-name"><%=employee.name%> <%=employee.surname%></td>
+                                <td><%=employee.monthSalary%></td>
+                                <td class="bonus"><%=employee.bonusAmount%></td>
+                                <td><%= employee.workdays.daysNormal.length + employee.workdays.daysDelegation.length%> (<%=employee.workdays.daysDelegation.length%> w delegacji)</td>
+                                <td>
+                                    <a class="btn-employee">Szczegóły</a>
+                                </td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+    </main>
+  <%-include('../includes/logout.ejs')%>
+  <%-include('../includes/sum-up.ejs')%>
+</body>
+</html>
