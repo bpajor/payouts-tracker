@@ -5,7 +5,9 @@
     const sumUpForm = document.getElementById('sum-up-form');
 
     const cancelExcelButton = document.getElementById('cancel-excel');
-    const confirmExcelButton = document.getElementById('confirm-excel')
+    const confirmExcelButton = document.getElementById('confirm-excel');
+
+    const redirectingControl = document.querySelector('.redirecting-control');
 
     sumCampaignButton.addEventListener('click', () => {
         sumUpOverlay.style.display = 'block';
@@ -13,6 +15,7 @@
     });
 
     sumUpOverlay.addEventListener('click', () => {
+      if (redirectingControl.style.display === 'block') return;
       sumUpOverlay.style.display = 'none';
       sumUpForm.style.display = 'none';
     })
@@ -20,13 +23,18 @@
     cancelExcelButton.addEventListener('click', () => {
     //   sumUpOverlay.style.display = 'none';
     //   sumUpForm.style.display = 'none';
-        sumUpForm.action = '/test';
+        sumUpForm.action = '/end-campaign/non-excel';
         sumUpForm.submit();
     })
 
     confirmExcelButton.addEventListener('click', () => {
         sumUpForm.action = '/create-excel-file';
         sumUpForm.submit();
+        sumUpForm.style.display = 'none';
+        redirectingControl.style.display = 'block';
+        setTimeout( () => {
+            window.location.href = '/campaigns-story';
+        }, 3000)
     })
 
   </script>

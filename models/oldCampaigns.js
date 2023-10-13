@@ -3,23 +3,43 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const oldCampaignsSchema = new Schema({
-    title: {
+  title: {
+    type: String,
+    required: true,
+  },
+  ownerId: {
+    type: Schema.Types.ObjectId,
+    required: true,
+  },
+  allExpenses: {
+    type: Number,
+    required: true,
+  },
+  endtime: {
+    type: Date,
+    required: true,
+  },
+  employeesData: [
+    {
+      name: {
         type: String,
-        required: true
-    },
-    ownerId: {
-        type: Schema.Types.ObjectId,
-        required: true
-    },
-    allExpenses: {
+        required: true,
+      },
+      surname: {
+        type: String,
+        required: true,
+      },
+      payment: {
         type: Number,
-        required: true
+        required: true,
+      },
+      daysWorked: {
+        type: Number,
+        required: true,
+      },
     },
-    endtime: {
-        type: Date,
-        required: true
-    }
-})
+  ],
+});
 
-const OldCampaigns = mongoose.model("OldCampaign", oldCampaignsSchema);
+const OldCampaigns = mongoose.model("OldCampaigns", oldCampaignsSchema);
 export { OldCampaigns };

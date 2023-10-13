@@ -1,0 +1,28 @@
+<%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="/css/home.css">
+<link rel="stylesheet" href="css/old-campaigns.css">
+<script
+      src="https://kit.fontawesome.com/5410e8ffe4.js"
+      crossorigin="anonymous"
+    ></script>
+</head>
+
+<body>
+  <%- include('../includes/logout-overlay.ejs')%>
+  <header>
+    <%- include('../includes/navigation.ejs') %>
+  </header>
+    <main class="auth">
+      <% for (let oldCampaign of oldCampaigns) { %>
+        <div class="old-campaign-box">
+            <h1><%=oldCampaign.title%></h1>
+            <h2>Wydanych pieniędzy: <%=oldCampaign.allExpenses%> PLN</h2>
+            <% let campaignStart = new Date(oldCampaign.endtime);
+            campaignStart.setDate(campaignStart.getDate() - 30); %>
+            <h2>Czas trwania kampanii: <%= campaignStart.toLocaleDateString('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' }) %> - <%= new Date(oldCampaign.endtime).toLocaleDateString('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' }) %> </h2>
+        </div>
+      <% } %>
+    </main>
+  <%-include('../includes/logout.ejs')%>
+</body>
+</html>

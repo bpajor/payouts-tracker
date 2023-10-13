@@ -1,5 +1,5 @@
 import Express from "express";
-import { getAddCampaign, getAddEmployee, getCampaign, getCampaignDetails, getCreateExcelFile, getEditEmployee, getEmployeeDetails, getEmployees, getEndCampaign, getHome, postAddCampaign, postAddEmployee, postCreateExcelFile, postDeleteCampaign, postDeleteEmployee, postEditEmployee, postUpdateCampaign, postUpdateEmployee } from "../controllers/user.js";
+import { getAddCampaign, getAddEmployee, getCampaign, getCampaignDetails, getCampaingsStory, getCreateExcelFile, getEditEmployee, getEmployeeDetails, getEmployees, getEndCampaign, getHome, postAddCampaign, postAddEmployee, postCreateExcelFile, postDeleteCampaign, postDeleteEmployee, postEditEmployee, postUpdateCampaign, postUpdateEmployee } from "../controllers/user.js";
 import { body } from "express-validator";
 import { isAuth } from "../middleware/is-auth.js";
 
@@ -54,4 +54,6 @@ router.get('/end-campaign', isAuth, getEndCampaign);
 
 router.get('/create-excel-file', isAuth, getCreateExcelFile);
 
-router.post('/create-excel-file', isAuth , postCreateExcelFile)
+router.post('/create-excel-file', isAuth , postCreateExcelFile);
+
+router.get('/campaigns-story', isAuth, getCampaingsStory);

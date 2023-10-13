@@ -9,6 +9,7 @@ import * as reader from "xlsx/xlsx.mjs";
 import fs from "fs";
 import ExcelJs from "exceljs";
 import pkg from "electron";
+import { OldCampaigns } from "../models/oldCampaigns.js";
 
 export const getHome = (req, res, next) => {
   console.log(req.user);
@@ -431,6 +432,34 @@ export const getCreateExcelFile = (req, res, next) => {
 // };
 
 export const postCreateExcelFile = async (req, res, next) => {
+  const presentCampaign = req.user.campaign;
+
+  let allExpenses = 0; 
+  presentCampaign.employeesData.forEach(employee => {
+    allExpenses += employee.employeeId.hourlyRate * employee.employeeId.dailyHours * (employee.workdays.daysNormal.length + employee.workdays.daysDelegation.length) + presentCampaign.delegationAmount * employee.workdays.daysDelegation.length + (employee.employeeId.isDriver ? employee.employeeId.driverAmount : 0) + employee.bonusAmount;
+  })
+
+  const employeesData = [];
+  presentCampaign.employeesData.forEach(employee => {
+    const employeeData = {
+      name: employee.employeeId.name,
+      surname: employee.employeeId.surname,
+      payment: employee.employeeId.hourlyRate * employee.employeeId.dailyHours * (employee.workdays.daysNormal.length + employee.workdays.daysDelegation.length) + presentCampaign.delegationAmount * employee.workdays.daysDelegation.length + (employee.employeeId.isDriver ? employee.employeeId.driverAmount : 0) + employee.bonusAmount,
+      daysWorked: employee.workdays.daysNormal.length + employee.workdays.daysDelegation.length, 
+    };
+    employeesData.push(employeeData);
+  })
+
+  const oldCampaign = new OldCampaigns({
+    title: presentCampaign.title,
+    ownerId: presentCampaign.ownerId,
+    allExpenses,
+    endtime: presentCampaign.endtime,
+    employeesData
+  });
+
+  await oldCampaign.save();
+
   const workbook = new ExcelJs.Workbook();
   const worksheet = workbook.addWorksheet("Pracownicy");
   worksheet.getCell("A1").value = "Lp.";
@@ -445,7 +474,6 @@ export const postCreateExcelFile = async (req, res, next) => {
   worksheet.getCell("J1").value = "Premia";
   worksheet.getCell("K1").value = "Razem";
 
-  const presentCampaign = req.user.campaign;
   presentCampaign.employeesData.forEach((employee, index) => {
     console.log(presentCampaign);
     const rowIndex = index + 2;
@@ -473,13 +501,12 @@ export const postCreateExcelFile = async (req, res, next) => {
   })});
 
   try {
-    const filePath = `wypłaty_${presentCampaign.title}.xlsx`; // Ścieżka do pliku
+    const filePath = `wypłaty_${presentCampaign.title}.xlsx`;
 
     await workbook.xlsx.writeFile(filePath);
 
-    // Poniżej zaczyna się proces wysyłania pliku do klienta
     const fileStream = fs.createReadStream(filePath);
-
+ 
     fileStream.on("open", () => {
       res.setHeader(
         "Content-Type",
@@ -490,20 +517,18 @@ export const postCreateExcelFile = async (req, res, next) => {
     });
 
     fileStream.on("error", (err) => {
-      res
-        .status(500)
-        .send({
-          success: false,
-          message: "Wystąpił błąd podczas tworzenia pliku.",
-        });
+      throw new Error(err);
     });
-  } catch (err) {
-    console.log(err);
-    res
-      .status(500)
-      .send({
-        success: false,
-        message: "Wystąpił błąd podczas tworzenia pliku.",
-      });
+
+  } catch (error) {
+    error.message = "Server bug";
+    error.httpStatusCode = 500;
+    return next(error);
   }
 };
+
+export const getCampaingsStory = async (req, res, next) => {
+  const oldCampaigns = await OldCampaigns.find({ownerId: req.user._id});
+  console.log(oldCampaigns);
+  res.render("user/campaigns-story", { pageTitle: "Historia kampanii", oldCampaigns });
+}

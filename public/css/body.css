@@ -39,7 +39,7 @@ body {
 }
 
 
-#confirmation-form, .bonus-confirmation-form, #sum-up-form {
+#confirmation-form, .bonus-confirmation-form, #sum-up-form, .redirecting-control {
     display: none;
     position: fixed;
     top: 50%;

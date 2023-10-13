@@ -70,7 +70,7 @@ campaignSchema.methods.updateCampaign = async function () {
     foundEmployees.splice(employeeToDeleteIndex, 1);
   });
   foundEmployees.forEach((employee) => {
-    this.employeesData.push({ employeeId: employee._id, workdays: [] });
+    this.employeesData.push({ employeeId: employee._id, workdays: [], bonusAmount: 0 });
   });
   return await this.save();
 };
