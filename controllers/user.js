@@ -521,7 +521,7 @@ export const postCreateExcelFile = async (req, res, next) => {
       throw new Error(err);
     });
 
-
+3
 
   } catch (error) {
     error.message = "Server bug";
@@ -531,7 +531,13 @@ export const postCreateExcelFile = async (req, res, next) => {
 };
 
 export const getCampaingsStory = async (req, res, next) => {
-  const oldCampaigns = await OldCampaigns.find({ownerId: req.user._id});
-  console.log(oldCampaigns);
-  res.render("user/campaigns-story", { pageTitle: "Historia kampanii", oldCampaigns });
+  try {
+    const oldCampaigns = await OldCampaigns.find({ownerId: req.user._id});
+    res.render("user/campaigns-story", { pageTitle: "Historia kampanii", oldCampaigns });
+  } catch (error) {
+    error.message = "Server bug";
+    error.httpStatusCode = 500;
+    return next(error);
+  }
+
 }

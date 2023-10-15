@@ -60,7 +60,10 @@ const postAddEditEmployee = async (req, res, next, errors, mode) => {
   if (!userCampaign) {
     return res.redirect('/employees')
   }
-  await userCampaign.updateCampaign();
+  if (userCampaign) {
+    console.log(userCampaign);
+    await userCampaign.updateCampaign();
+  }
   res.redirect("/employees");
 };
 

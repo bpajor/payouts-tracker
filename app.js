@@ -53,9 +53,7 @@ app.use(async (req, res, next) => {
     })
       .findOne()
       .populate("employeesData.employeeId");
-    if (presentCampaign) {
-      loggedInUser.campaign = presentCampaign;
-    }
+    loggedInUser.campaign = presentCampaign;
     // console.log(loggedInUser);
     req.user = loggedInUser;
     // console.log(req.user);

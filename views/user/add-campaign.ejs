@@ -10,8 +10,11 @@
   <main class="auth">
     <form action="/add-campaign" method="POST" class="form">
         <p class="title">Dodaj kampanię</p>
+        <div class="error" id="name--hidden">
+          <p>Nie używaj polskich znaków w nazwie kampanii !</p>
+        </div>
         <div class="form-control">
-            <label for="title" class="form-label">Podaj nazwę kampanii</label>
+            <label for="title" class="form-label">Podaj nazwę kampanii (nie polskie znaki): </label>
             <input class="form-input" type="text" id="title" name="title" required>
         </div>
         <div class="form-control">
