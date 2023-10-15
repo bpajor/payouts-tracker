@@ -50,7 +50,7 @@
                             <td><%= employee.monthSalary%></td>
                             <td><%= employee.workdays.daysNormal.length + employee.workdays.daysDelegation.length%> (<%=employee.workdays.daysDelegation.length%> w delegacji)</td>
                             <td><%= employee.bonusAmount %></td>
-                            <td>
+                            <td id='employee-details-button'>
                                 <a type="button" class="btn-employee" href='/employee-details/<%= employee._id%>'>Szczegóły pracownika</a>
                             </td>
                         </tr>

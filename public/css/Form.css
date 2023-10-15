@@ -91,6 +91,14 @@
 }
 
 @media screen and (max-width: 1200px) {
+   .form {
+    font-size: 0.8rem;
+   }
+
+   .title {
+    font-size: 1.5rem;
+   }
+   
    .signup--form {
     margin-top: 0px;
     width: 100%;
@@ -110,7 +118,16 @@
 }
 
 @media screen and (max-width: 690px) {
-   .form-label {
+  .form {
+    width: 100%;
+    height: 100%;
+  } 
+
+  .title {
+    font-size: 1rem;
+  }
+
+  .form-label {
      font-size: 0.8rem;
    }
 

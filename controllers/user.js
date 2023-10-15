@@ -12,8 +12,7 @@ import pkg from "electron";
 import { OldCampaigns } from "../models/oldCampaigns.js";
 
 export const getHome = (req, res, next) => {
-  console.log(req.user);
-  res.render("user/home", { pageTitle: "Strona główna" });
+    res.redirect('/campaign');
 };
 
 export const getEmployees = async (req, res, next) => {
@@ -506,19 +505,23 @@ export const postCreateExcelFile = async (req, res, next) => {
     await workbook.xlsx.writeFile(filePath);
 
     const fileStream = fs.createReadStream(filePath);
- 
-    fileStream.on("open", () => {
+    
+    fileStream.on("open", async () => {
       res.setHeader(
         "Content-Type",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
       );
       res.setHeader("Content-Disposition", `attachment; filename=wyplaty_${presentCampaign.title}.xlsx`);
       fileStream.pipe(res);
+      await presentCampaign.deleteOne();
+      console.log(req.user);
     });
 
     fileStream.on("error", (err) => {
       throw new Error(err);
     });
+
+
 
   } catch (error) {
     error.message = "Server bug";

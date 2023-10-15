@@ -2,7 +2,6 @@
 
     const employees = <%- JSON.stringify(employees)%>;
     const select = document.getElementById('sort-select');
-    console.log(select.name);
 
     function renderTable() {
       let existingTBody = document.querySelector('tbody');
@@ -15,7 +14,6 @@
           }
       })
 
-      console.log(ids);
 
       if (existingTable) {
           existingTable.remove();
@@ -48,12 +46,6 @@
       }
 
       newTable.appendChild(thead);
-
-    //   employees = employees.filter(employee => {
-    //     console.log(ids.includes(employee._id));
-    //     return ids.includes(employee._id)
-    //   })
-
 
       for (let employee of employees) {
         let row;
@@ -103,7 +95,7 @@
                   <td class='employee-full-name'>${employee.name} ${employee.surname}</td>
                   <td>${employee.monthSalary}</td>
                   <td>${employee.workdays.daysNormal.length + employee.workdays.daysDelegation.length} (${employee.workdays.daysDelegation.length} w delegacji)</td>
-                  <td>
+                  <td id='employeee-details-button'>
                     <a type="button" class="btn-employee" href='/employee-details/${employee._id}'>Szczegóły pracownika</a>
                   </td>
               </tr>
@@ -115,7 +107,7 @@
                   <td class='employee-full-name'>${employee.name} ${employee.surname}</td>
                   <td>${employee.monthSalary}</td>
                   <td>${employee.workdays.daysNormal.length + employee.workdays.daysDelegation.length} (${employee.workdays.daysDelegation.length} w delegacji)</td>
-                  <td>
+                  <td id='employee-details-button'>
                     <a type="button" class="btn-employee" href='/employee-details/${employee._id}'>Szczegóły pracownika</a>
                   </td>
               </tr>
@@ -133,11 +125,9 @@
     select.addEventListener('change', function() {
         const selectedOption = this.value;
         let sortedEmployes = [];
-        console.log(selectedOption);
 
         switch(selectedOption) {
           case 'Alfabetycznie (rosnąco)':
-              console.log('sortowanie rosnąco');
               employees.sort((a,b) => {
                   if (a.surname < b.surname) return -1
                   else if (a.surname > b.surname) return 1

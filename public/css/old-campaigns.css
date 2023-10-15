@@ -11,3 +11,10 @@
     flex-flow: column;
     font-size: 0.8rem;
   }
+
+  @media screen and (max-width: 800px) {
+    .old-campaign-box {
+      width: 100%;
+    }
+  }
+    

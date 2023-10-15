@@ -61,4 +61,15 @@ button:disabled:hover {
       font-size: 0.7rem;
       max-width: 400px;
     }
+
+    .button-campaigns {
+      font-size: 0.7rem;
+    }
+}
+
+@media screen and (max-width: 500px) {
+  .campaign-control {
+    font-size: 0.5rem;
+    max-width: 300px;
+  }
 }

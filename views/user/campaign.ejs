@@ -1,5 +1,5 @@
 <%- include('../includes/head.ejs') %>
-<link rel="stylesheet" href="/css/campaign.css">
+<link rel="stylesheet" href="css/campaign.css">
 <script
       src="https://kit.fontawesome.com/5410e8ffe4.js"
       crossorigin="anonymous"
@@ -31,14 +31,14 @@
                   <% })%>
               </ol>
               <nav class="campaign-bar">
-                  <a type="button" class="message-item-button" href="/campaign-details">Szczegóły kampanii</a>
+                  <a type="button" class="message-item-button button-campaigns" href="/campaign-details">Szczegóły kampanii</a>
                   <% if (presentCampaign.endtime.getDate() - new Date().getDate()) {%>
-                    <button class="message-item-button" disabled>Zakończ kampanię</button>
+                    <button class="message-item-button button-campaings" disabled>Zakończ kampanię</button>
                   <% } else {%>
-                    <a type="button" class="message-item-button" href="/end-campaign">Zakończ kampanię</a>
+                    <a type="button" class="message-item-button button-campaigns" href="/end-campaign">Zakończ kampanię</a>
                   <% } %>
                   <form action="/delete-campaign/<%= presentCampaign._id %>" method="POST">
-                    <button type="submit" class="message-item-button">Usuń kampanię</button>
+                    <button type="submit" class="message-item-button button-campaigns">Usuń kampanię</button>
                   </form>
               </nav>
           </div>

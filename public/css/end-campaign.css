@@ -10,3 +10,9 @@
     align-items: center;
     flex-flow: column;
   }
+
+  @media screen and (max-width: 800px) {
+    .end-campaign-box {
+      width: 100%;
+    }
+  }
