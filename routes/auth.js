@@ -8,6 +8,7 @@ import {
 } from "../controllers/auth.js";
 import { body } from "express-validator";
 import { isAuth } from "../middleware/is-auth.js";
+import { csrfSynchronisedProtection } from "../helpers/csrfMiddleware.js";
 
 export const router = Express.Router();
 
@@ -50,7 +51,7 @@ router.post(
       }
       return true;
     }),
-  ],
+  ], csrfSynchronisedProtection,
   postSignup
 );
 
@@ -73,8 +74,8 @@ router.post(
         return true;
       })
       .trim(),
-  ],
+  ], csrfSynchronisedProtection,
   postLogin
 );
 
-router.post('/logout', isAuth, postLogout)
+router.post('/logout', csrfSynchronisedProtection, isAuth, postLogout)

@@ -49,6 +49,7 @@
             </div>
             
             <form action="/update-workdays/<%= employee.employeeId._id%>" method="POST">
+              <input type="hidden" name="CSRFToken" value=<%= token %>>
               <div class="date-control">
                 <p class="days-selection-msg">Zaznacz dni na delegacji: </p>
                 <input type="text" id="datepicker-delegation" name="datesDelegation" placeholder="dates" data-multiple readonly>

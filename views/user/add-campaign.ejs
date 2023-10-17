@@ -8,9 +8,14 @@
     <%- include('../includes/navigation.ejs') %>
   </header>
   <main class="auth">
-    <form action="/add-campaign" method="POST" class="form">
+    <form action="/add-campaign" method="POST" class="form" onsubmit="onFormSubmit(event)">
+      <input type="hidden" name="CSRFToken" value=<%= token %>>
         <p class="title">Dodaj kampanię</p>
-        <div class="error" id="name--hidden">
+        <% errors.forEach(error => {
+          if (error.path === 'title') { %>
+            <div class="error flex" id="title--invalid"><%= error.msg %></div>
+        <% }}) %> 
+        <div class="error" id="title--hidden">
           <p>Nie używaj polskich znaków w nazwie kampanii !</p>
         </div>
         <div class="form-control">
@@ -31,6 +36,55 @@
     </form>
   </main>
   <%-include('../includes/logout.ejs')%>
+  <script>
+    const isCorrectFilename = (name) => {
+       console.log(/^[\x20-\x7E\x80-\xFF]+$/.test(name))
+       return /^[\x20-\x7E\x80-\xFF]+$/.test(name);
+     }
+
+     const resetErrorMessages = (allFields) => {
+       allFields.forEach(field => {
+         console.log(field.id);
+         const hiddenItem = document.getElementById(`${field.id}--hidden`);
+         const backendItem = document.getElementById(`${field.id}--invalid`);
+         hiddenItem.style.display = 'none';
+         if (backendItem) {
+           backendItem.style.display = 'none';
+         }
+       })
+     }
+
+     const onFormSubmit = () => {
+       const fields = [
+         {id: 'title', validator: isCorrectFilename}, 
+        ]
+       
+       const errors = [];
+
+       resetErrorMessages(fields);
+
+       fields.forEach(field => {
+         const inputValue = document.getElementById(field.id).value;
+         console.log(inputValue);
+         if (!field.validator(inputValue)) {
+           errors.push({id: `${field.id}--hidden`})
+         }
+       })
+
+
+       if (errors.length > 0) {
+         event.preventDefault();
+         errors.forEach(error => {
+           const item = document.getElementById(error.id);
+           item.style.display = 'flex';
+           item.style.justifyContent = 'center';
+           item.style.alignItems = 'center';
+         })
+       }
+
+       }
+   
+ </script>
 </body>
 
 </html>

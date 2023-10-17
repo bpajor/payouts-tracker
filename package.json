@@ -26,6 +26,7 @@
     "body-parser": "^1.20.2",
     "connect-flash": "^0.1.1",
     "connect-mongodb-session": "^3.1.1",
+    "csrf-sync": "^4.0.1",
     "dialog": "^0.3.1",
     "dotenv": "^16.3.1",
     "ejs": "^3.1.9",

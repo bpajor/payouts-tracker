@@ -20,8 +20,14 @@
       <% } else {%>
         <div class="campaign-control">
           <div class="message-control">
-              <h1>Do końca kampani pozostało: <%= Math.ceil((presentCampaign.endtime- new Date())/(1000*3600*24))%> dni</h1>
-              <h2>Bieżące wydatki: <%= allEmpSalarySum %> PLN</h2>
+              <% let daysLeft = Math.ceil((presentCampaign.endtime- new Date())/(1000*3600*24))%>
+              <% if (daysLeft >= 0) { %>
+                <h1>Do końca kampani pozostało: <%= daysLeft %> dni</h1>
+                <h2>Bieżące wydatki: <%= allEmpSalarySum %> PLN</h2>
+              <%} else {%>
+                <h1>Kampania zakończyła się: <%= daysLeft %> dni temu</h1>
+                <h2>Bieżące wydatki: <%= allEmpSalarySum %> PLN</h2>
+              <%}%>
           </div>
           <div class="message-control">
               <h2>Top 3 Opłacanych pracowników: </h2>
@@ -32,12 +38,13 @@
               </ol>
               <nav class="campaign-bar">
                   <a type="button" class="message-item-button button-campaigns" href="/campaign-details">Szczegóły kampanii</a>
-                  <% if (presentCampaign.endtime.getDate() - new Date().getDate()) {%>
+                  <% if (daysLeft > 0) {%>
                     <button class="message-item-button button-campaings" disabled>Zakończ kampanię</button>
                   <% } else {%>
                     <a type="button" class="message-item-button button-campaigns" href="/end-campaign">Zakończ kampanię</a>
                   <% } %>
                   <form action="/delete-campaign/<%= presentCampaign._id %>" method="POST">
+                    <input type="hidden" name="CSRFToken" value=<%= token %>>
                     <button type="submit" class="message-item-button button-campaigns">Usuń kampanię</button>
                   </form>
               </nav>

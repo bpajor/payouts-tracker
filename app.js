@@ -10,6 +10,7 @@ import session from "express-session";
 import URI from "./URI.js";
 import { Campaign } from "./models/campaign.js";
 import mongoose from "mongoose";
+import { generateToken } from "./helpers/csrf.js";
 
 console.log(process.type);
 
@@ -41,13 +42,29 @@ app.use(
 // })
 
 app.use(async (req, res, next) => {
-  res.locals.isAuthenticated = req.session.isLoggedIn;
-  const loggedInUser = req.session.user;
+  // try {
 
-  if (!loggedInUser) {
-    return next();
-  }
+    // }
+  // } catch (error) {
+  //   console.log(error);
+  //   error.message = "Server bug";
+  //   error.httpStatusCode = 500;
+  //   return next(error);
+  // }
+
+  // res.locals.token = generateToken(req);
+  // req.headers.CSRFToken = generateToken(req);
+  // console.log(req.headers);
+
   try {
+    console.log(req);
+    res.locals.token = generateToken(req);
+    res.locals.isAuthenticated = req.session.isLoggedIn;
+    const loggedInUser = req.session.user;
+
+    if (!loggedInUser) {
+      return next();
+    }
     const presentCampaign = await Campaign.where({
       ownerId: new mongoose.Types.ObjectId(loggedInUser._id),
     })
@@ -95,6 +112,7 @@ app.use((error, req, res, next) => {
       });
 
     case "Server bug":
+      console.log('in error middleware')
       res
         .status(error.httpStatusCode)
         .render("error/500", { pageTitle: "Błąd Serwera" });

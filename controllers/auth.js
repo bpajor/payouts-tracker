@@ -1,8 +1,10 @@
 import { validationResult } from "express-validator";
 import bcrypt from "bcryptjs";
 import { User } from "../models/user.js";
+import { generateToken } from "../helpers/csrf.js";
 
 export const getSignup = (req, res, next) => {
+  console.log(generateToken(req));
   res.render("auth/signup", {
     pageTitle: "Zarejestruj się",
     errors: [],
@@ -55,6 +57,7 @@ export const postSignup = async (req, res, next) => {
 };
 
 export const getLogin = (req, res, next) => {
+  console.log(generateToken(req));
   res.render("auth/login", {
     pageTitle: "Zaloguj się",
     errors: [],
@@ -66,6 +69,7 @@ export const postLogin = async (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
   const oldInput = { email, password };
+  console.log(req.body);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = new Error("Login error");
@@ -96,7 +100,7 @@ export const postLogin = async (req, res, next) => {
       if (err) {
         throw new Error("Server bug");
       }
-      console.log('after login')
+      console.log('after login');
       res.redirect("/");
     });
 
@@ -137,6 +141,7 @@ export const postLogout = async (req, res, next) => {
       error.httpStatusCode = 500;
       return next(error);
     }
+    req.headers.isCSRFToken = false;
     res.redirect("/");
   });
 };

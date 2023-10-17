@@ -8,6 +8,7 @@
   </header>
   <main class="not-auth">
     <form action="/login" method="POST" class="form login" onsubmit="onFormSubmit(event)">
+        <input type="hidden" name="CSRFToken" value=<%= token %>>
         <p class="title">Zaloguj się</p>
         <% errors.forEach(error => {
           if (error.path === 'email') { %>

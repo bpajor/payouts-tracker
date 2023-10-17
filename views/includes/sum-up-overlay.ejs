@@ -1,5 +1,6 @@
 <div id="sum-up-overlay"></div>
 <form id="sum-up-form" class="sum-up-confirmation-form" style="display: none" method="POST">
+  <input type="hidden" name="CSRFToken" value=<%= token %>>
   <p>Czy chcesz wyeksportować kampanię do Excela?</p>
   <button
     class="message-item-button btn--overlay"

@@ -3,16 +3,12 @@ import { Employee } from "../models/employee.js";
 import postAddEditEmployee from "../helpers/employeeAddEdit.js";
 import { Campaign } from "../models/campaign.js";
 import { ObjectId } from "mongodb";
-// import pkg from "dialog";
-// import pkg from "electron";
-import * as reader from "xlsx/xlsx.mjs";
 import fs from "fs";
 import ExcelJs from "exceljs";
-import pkg from "electron";
 import { OldCampaigns } from "../models/oldCampaigns.js";
 
 export const getHome = (req, res, next) => {
-    res.redirect('/campaign');
+  res.redirect("/campaign");
 };
 
 export const getEmployees = async (req, res, next) => {
@@ -138,64 +134,51 @@ export const postDeleteEmployee = async (req, res, next) => {
 };
 
 export const getCampaign = async (req, res, next) => {
-  const presentCampaign = await Campaign.where({
-    ownerId: req.user._id,
-  })
-    .findOne()
-    .populate("employeesData.employeeId");
-  console.log(presentCampaign);
-  let isCampaign = true;
-  if (!presentCampaign) {
-    isCampaign = false;
-    return res.render("user/campaign", { pageTitle: "Kampania", isCampaign });
-  }
-  let allEmpSalarySum = 0;
-  const topEmps = [];
-  presentCampaign.employeesData.forEach((employee) => {
-    const monthSalary =
-      employee.bonusAmount +
-      employee.employeeId.hourlyRate *
-        employee.employeeId.dailyHours *
-        (employee.workdays.daysNormal.length +
-          employee.workdays.daysDelegation.length) +
-      presentCampaign.delegationAmount *
-        employee.workdays.daysDelegation.length +
-      (employee.employeeId.isDriver ? employee.employeeId.driverAmount : 0);
-    allEmpSalarySum += monthSalary;
-
-    const emp = {
-      name: employee.employeeId.name,
-      surname: employee.employeeId.surname,
-      monthSalary,
-    };
-    if (topEmps.length < 3) {
-      topEmps.push(emp);
-      topEmps.sort((empOne, empTwo) => {
-        return empTwo.monthSalary - empOne.monthSalary;
-      });
-    } else {
-      if (emp.monthSalary > topEmps[2].monthSalary) {
-        topEmps[2] = emp;
-      }
-      topEmps.sort((empOne, empTwo) => {
-        return empTwo.monthSalary - empOne.monthSalary;
-      });
+  try {
+    const presentCampaign = await Campaign.where({
+      ownerId: req.user._id,
+    })
+      .findOne()
+      .populate("employeesData.employeeId");
+    let isCampaign = true;
+    if (!presentCampaign) {
+      isCampaign = false;
+      return res.render("user/campaign", { pageTitle: "Kampania", isCampaign });
     }
-  });
-  res.render("user/campaign", {
-    pageTitle: "Kampania",
-    isCampaign,
-    presentCampaign,
-    allEmpSalarySum,
-    topEmps,
-  });
+    const allEmpSalarySum = presentCampaign.calculateAllExpenses();
+    const topEmps = presentCampaign.calculateTopEmployees();
+
+    res.render("user/campaign", {
+      pageTitle: "Kampania",
+      isCampaign,
+      presentCampaign,
+      allEmpSalarySum,
+      topEmps,
+    });
+  } catch (error) {
+    console.log(error);
+    error.message = "Server bug";
+    error.httpStatusCode = 500;
+    return next(error);
+  }
 };
 
 export const getAddCampaign = (req, res, next) => {
-  res.render("user/add-campaign", { pageTitle: "Dodaj kampanię" });
+  res.render("user/add-campaign", { pageTitle: "Dodaj kampanię", errors: [] });
 };
 
 export const postAddCampaign = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const error = new Error("Bad filename");
+    error.view = "user/add-campaign";
+    error.httpStatusCode = 422;
+    const reasons = errors.array().map((reason) => {
+      return { path: reason.path, msg: reason.msg };
+    });
+    error.content = { reasons, inputs: oldInput, isUserSigned: undefined };
+    return next(error);
+  }
   let { title, endtime, delegationAmount } = req.body;
   endtime = new Date(endtime);
   endtime.setHours(endtime.getHours() + 2);
@@ -235,6 +218,7 @@ export const postDeleteCampaign = async (req, res, next) => {
     await campaign.deleteOne();
     return res.redirect("/campaign");
   } catch (error) {
+    console.log(error);
     error.message = "Server bug";
     error.httpStatusCode = 500;
     return next(error);
@@ -248,28 +232,7 @@ export const getCampaignDetails = async (req, res, next) => {
     })
       .findOne()
       .populate("employeesData.employeeId");
-    let employees = [];
-    presentCampaign.employeesData.forEach((employee) => {
-      const employeeToPush = {
-        ...employee.employeeId._doc,
-        workdays: employee.workdays,
-        bonusAmount: employee.bonusAmount,
-      };
-      employeeToPush.monthSalary =
-        employee.bonusAmount +
-        employee.employeeId.hourlyRate *
-          employee.employeeId.dailyHours *
-          (employee.workdays.daysNormal.length +
-            employee.workdays.daysDelegation.length) +
-        presentCampaign.delegationAmount *
-          employee.workdays.daysDelegation.length +
-        (employee.employeeId.isDriver ? employee.employeeId.driverAmount : 0);
-      //   +
-      // // (employee.employeeId.delegationAmount *
-      // //   employee.workdays.daysDelegation.length);
-      employees.push(employeeToPush);
-    });
-    console.log(employees[0].workdays.daysDelegation.length);
+    const employees = presentCampaign.extractEmployeesData();
     return res.render("user/campaign-details", {
       pageTitle: "Szczegóły kampanii",
       employees: employees,
@@ -292,26 +255,7 @@ export const getEmployeeDetails = async (req, res, next) => {
     })
       .findOne()
       .populate("employeesData.employeeId");
-    let employee;
-    const employeeIndex = presentCampaign.employeesData.findIndex((emp) => {
-      return emp.employeeId._id.toString() === req.params.employeeId.toString();
-    });
-    employee = { ...presentCampaign.employeesData[employeeIndex]["_doc"] };
-    if (!employee) {
-      throw new Error("Employee not found");
-    }
-    employee.monthSalary =
-      employee.bonusAmount +
-      employee.employeeId.hourlyRate *
-        employee.employeeId.dailyHours *
-        (employee.workdays.daysNormal.length +
-          employee.workdays.daysDelegation.length) +
-      presentCampaign.delegationAmount *
-        employee.workdays.daysDelegation.length +
-      (employee.employeeId.isDriver ? employee.employeeId.driverAmount : 0);
-    //   +
-    // employee.employeeId.delegationAmount *
-    //   employee.workdays.daysDelegation.length;
+    const employee = presentCampaign.extractEmployeeData(req.params.employeeId);
 
     const campaignEndTime = presentCampaign.endtime;
     return res.render("user/employee-details", {
@@ -347,19 +291,13 @@ export const postUpdateEmployee = async (req, res, next) => {
     })
       .findOne()
       .populate("employeesData.employeeId");
-    let employee;
-    const employeeIndex = presentCampaign.employeesData.findIndex((emp) => {
-      return emp.employeeId._id.toString() === req.params.employeeId.toString();
-    });
-    presentCampaign.employeesData[employeeIndex].workdays.daysDelegation = [
-      ...selectedDelegationDays,
-    ];
-    presentCampaign.employeesData[employeeIndex].workdays.daysNormal = [
-      ...selectedNormalDays,
-    ];
-    console.log(bonusAmount);
-    presentCampaign.employeesData[employeeIndex].bonusAmount = bonusAmount;
-    console.log(presentCampaign.employeesData[employeeIndex.workdays]);
+    presentCampaign.updateEmployee(
+      req.params.employeeId,
+      bonusAmount,
+      selectedDelegationDays,
+      selectedNormalDays
+    );
+
     await presentCampaign.save();
     return res.redirect("/campaign");
   } catch (error) {
@@ -371,7 +309,6 @@ export const postUpdateEmployee = async (req, res, next) => {
 };
 
 export const getEndCampaign = async (req, res, next) => {
-  // res.render("user/end-campaign", { pageTitle: "Strona główna" });
   try {
     const presentCampaign = await Campaign.where({
       ownerId: req.user._id,
@@ -393,7 +330,11 @@ export const getEndCampaign = async (req, res, next) => {
             employee.workdays.daysDelegation.length) +
         presentCampaign.delegationAmount *
           employee.workdays.daysDelegation.length +
-        (employee.employeeId.isDriver ? employee.employeeId.driverAmount : 0);
+        (employee.employeeId.isDriver
+          ? employee.employeeId.driverAmount *
+            (employee.workdays.daysNormal.length +
+              employee.workdays.daysDelegation.length)
+          : 0);
       //   +
       // // (employee.employeeId.delegationAmount *
       // //   employee.workdays.daysDelegation.length);
@@ -433,28 +374,50 @@ export const getCreateExcelFile = (req, res, next) => {
 export const postCreateExcelFile = async (req, res, next) => {
   const presentCampaign = req.user.campaign;
 
-  let allExpenses = 0; 
-  presentCampaign.employeesData.forEach(employee => {
-    allExpenses += employee.employeeId.hourlyRate * employee.employeeId.dailyHours * (employee.workdays.daysNormal.length + employee.workdays.daysDelegation.length) + presentCampaign.delegationAmount * employee.workdays.daysDelegation.length + (employee.employeeId.isDriver ? employee.employeeId.driverAmount : 0) + employee.bonusAmount;
-  })
+  let allExpenses = 0;
+  presentCampaign.employeesData.forEach((employee) => {
+    allExpenses +=
+      employee.employeeId.hourlyRate *
+        employee.employeeId.dailyHours *
+        (employee.workdays.daysNormal.length +
+          employee.workdays.daysDelegation.length) +
+      presentCampaign.delegationAmount *
+        employee.workdays.daysDelegation.length +
+      (employee.employeeId.isDriver
+        ? employee.employeeId.driverAmount *
+          (employee.workdays.daysDelegation.length +
+            employee.workdays.daysNormal.length)
+        : 0) +
+      employee.bonusAmount;
+  });
 
   const employeesData = [];
-  presentCampaign.employeesData.forEach(employee => {
+  presentCampaign.employeesData.forEach((employee) => {
     const employeeData = {
       name: employee.employeeId.name,
       surname: employee.employeeId.surname,
-      payment: employee.employeeId.hourlyRate * employee.employeeId.dailyHours * (employee.workdays.daysNormal.length + employee.workdays.daysDelegation.length) + presentCampaign.delegationAmount * employee.workdays.daysDelegation.length + (employee.employeeId.isDriver ? employee.employeeId.driverAmount : 0) + employee.bonusAmount,
-      daysWorked: employee.workdays.daysNormal.length + employee.workdays.daysDelegation.length, 
+      payment:
+        employee.employeeId.hourlyRate *
+          employee.employeeId.dailyHours *
+          (employee.workdays.daysNormal.length +
+            employee.workdays.daysDelegation.length) +
+        presentCampaign.delegationAmount *
+          employee.workdays.daysDelegation.length +
+        (employee.employeeId.isDriver ? employee.employeeId.driverAmount : 0) +
+        employee.bonusAmount,
+      daysWorked:
+        employee.workdays.daysNormal.length +
+        employee.workdays.daysDelegation.length,
     };
     employeesData.push(employeeData);
-  })
+  });
 
   const oldCampaign = new OldCampaigns({
     title: presentCampaign.title,
     ownerId: presentCampaign.ownerId,
     allExpenses,
     endtime: presentCampaign.endtime,
-    employeesData
+    employeesData,
   });
 
   await oldCampaign.save();
@@ -479,25 +442,157 @@ export const postCreateExcelFile = async (req, res, next) => {
     worksheet.getCell(`A${rowIndex}`).value = rowIndex - 1;
     worksheet.getCell(`B${rowIndex}`).value = employee.employeeId.name;
     worksheet.getCell(`C${rowIndex}`).value = employee.employeeId.surname;
-    worksheet.getCell(`D${rowIndex}`).value = employee.workdays.daysNormal.length + employee.workdays.daysDelegation.length;
+    worksheet.getCell(`D${rowIndex}`).value =
+      employee.workdays.daysNormal.length +
+      employee.workdays.daysDelegation.length;
     worksheet.getCell(`E${rowIndex}`).value = employee.employeeId.hourlyRate;
     worksheet.getCell(`F${rowIndex}`).value = employee.employeeId.dailyHours;
-    worksheet.getCell(`G${rowIndex}`).value = employee.employeeId.hourlyRate * employee.employeeId.dailyHours * (employee.workdays.daysNormal.length + employee.workdays.daysDelegation.length);
-    worksheet.getCell(`H${rowIndex}`).value = employee.workdays.daysDelegation.length;
-    worksheet.getCell(`I${rowIndex}`).value = employee.employeeId.isDriver ? employee.employeeId.driverAmount : 0;
+    worksheet.getCell(`G${rowIndex}`).value =
+      employee.employeeId.hourlyRate *
+      employee.employeeId.dailyHours *
+      (employee.workdays.daysNormal.length +
+        employee.workdays.daysDelegation.length);
+    worksheet.getCell(`H${rowIndex}`).value =
+      employee.workdays.daysDelegation.length *
+      presentCampaign.delegationAmount;
+    worksheet.getCell(`I${rowIndex}`).value = employee.employeeId.isDriver
+      ? employee.employeeId.driverAmount *
+        (employee.workdays.daysNormal.length +
+          employee.workdays.daysDelegation.length)
+      : 0;
     worksheet.getCell(`J${rowIndex}`).value = employee.bonusAmount;
-    worksheet.getCell(`K${rowIndex}`).value = employee.employeeId.hourlyRate * employee.employeeId.dailyHours * (employee.workdays.daysNormal.length + employee.workdays.daysDelegation.length) + presentCampaign.delegationAmount * employee.workdays.daysDelegation.length + (employee.employeeId.isDriver ? employee.employeeId.driverAmount : 0) + employee.bonusAmount;
-  })
+    // worksheet.getCell(`K${rowIndex}`).value =
+    //   employee.employeeId.hourlyRate *
+    //     employee.employeeId.dailyHours *
+    //     (employee.workdays.daysNormal.length +
+    //       employee.workdays.daysDelegation.length) +
+    //   employee.workdays.daysDelegation.length *
+    //     presentCampaign.delegationAmount +
+    //   (employee.employeeId.isDriver
+    //     ? employee.employeeId.driverAmount *
+    //       (employee.workdays.daysNormal.length +
+    //         employee.workdays.daysDelegation.length)
+    //     : 0) +
+    //   employee.bonusAmount;
+  });
 
-  worksheet.eachRow(row => {
-    row.eachCell(cell => {
+  const employeeSumCells = [];
+  presentCampaign.employeesData.forEach((employee, index) => {
+    const rowIndex = index + 2;
+    employeeSumCells.push([worksheet.getCell(`K${rowIndex}`)]);
+  });
+
+  employeeSumCells.forEach((cell, index) => {
+    let formula_string = `G${index + 2}+H${index + 2}+I${index + 2}+J${
+      index + 2
+    }+`;
+    // for (let i = 0; i <= presentCampaign.employeesData.length - 1; i++) {
+    //   formula_string += `G${index + 2}+H${index + 2}+I${index + 2}+J${
+    //     index + 2
+    //   }+`;
+    // }
+    formula_string = formula_string.slice(0, -1);
+    cell[0].value = { formula: formula_string };
+    cell[0].font = { bold: true };
+  });
+
+  const sumCells = [
+    worksheet.getCell(`F${presentCampaign.employeesData.length + 2}`),
+    worksheet.getCell(`G${presentCampaign.employeesData.length + 2}`),
+    worksheet.getCell(`H${presentCampaign.employeesData.length + 2}`),
+    worksheet.getCell(`I${presentCampaign.employeesData.length + 2}`),
+    worksheet.getCell(`J${presentCampaign.employeesData.length + 2}`),
+    worksheet.getCell(`K${presentCampaign.employeesData.length + 2}`),
+  ];
+
+  sumCells.forEach((cell, index) => {
+    cell.font = { bold: true };
+    if (!index) {
+      cell.value = "Razem";
+      return;
+    }
+    let formula_string = "";
+
+    for (let i = 2; i <= presentCampaign.employeesData.length + 1; i++) {
+      formula_string += `${String.fromCharCode(index + 70)}${i}+`;
+    }
+    formula_string = formula_string.slice(0, -1);
+    cell.value = { formula: formula_string };
+  });
+
+  // sumCells.forEach((cell, index) => {
+  //   switch (index) {
+  //     case 0:
+  //       cell.value = "Razem";
+  //       break;
+
+  //     case 1:
+  //       let pureSalary = 0;
+  //       presentCampaign.employeesData.forEach((employee) => {
+  //         pureSalary +=
+  //           employee.employeeId.hourlyRate *
+  //           employee.employeeId.dailyHours *
+  //           (employee.workdays.daysNormal.length +
+  //             employee.workdays.daysDelegation.length);
+  //       });
+  //       cell.value = pureSalary;
+  //       break;
+
+  //     case 2:
+  //       let pureDelegation = 0;
+  //       presentCampaign.employeesData.forEach((employee) => {
+  //         pureDelegation +=
+  //           presentCampaign.delegationAmount *
+  //           employee.workdays.daysDelegation.length;
+  //       });
+  //       cell.value = pureDelegation;
+  //       break;
+
+  //     case 3:
+  //       let pureDriver = 0;
+  //       presentCampaign.employeesData.forEach((employee) => {
+  //         pureDriver += employee.employeeId.isDriver
+  //           ? employee.employeeId.driverAmount *
+  //             (employee.workdays.daysNormal.length +
+  //               employee.workdays.daysDelegation.length)
+  //           : 0;
+  //       });
+  //       cell.value = pureDriver;
+  //       break;
+
+  //     case 4:
+  //       let pureBonus = 0;
+  //       presentCampaign.employeesData.forEach((employee) => {
+  //         pureBonus += employee.bonusAmount;
+  //       });
+  //       cell.value = pureBonus;
+  //       break;
+
+  //     case 5:
+  //       // cell.value = allExpenses;
+  //       let formula_string = "";
+  //       for (let i = 2; i <= presentCampaign.employeesData.length + 1; i++) {
+  //         formula_string += `K${i}+`;
+  //       }
+  //       formula_string = formula_string.slice(0, -1);
+  //       cell.value = { formula: formula_string };
+  //       break;
+  //   }
+  //   cell.font = { bold: true };
+  // });
+
+  worksheet.eachRow((row) => {
+    row.eachCell((cell) => {
       cell.border = {
         top: { style: "thin" },
         left: { style: "thin" },
         bottom: { style: "thin" },
-        right: { style: "thin" }
-      }
-  })});
+        right: { style: "thin" },
+      };
+    });
+  });
+
+  workbook.calcProperties.fullCalcOnLoad = true;
 
   try {
     const filePath = `wypłaty_${presentCampaign.title}.xlsx`;
@@ -505,13 +600,16 @@ export const postCreateExcelFile = async (req, res, next) => {
     await workbook.xlsx.writeFile(filePath);
 
     const fileStream = fs.createReadStream(filePath);
-    
+
     fileStream.on("open", async () => {
       res.setHeader(
         "Content-Type",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
       );
-      res.setHeader("Content-Disposition", `attachment; filename=wyplaty_${presentCampaign.title}.xlsx`);
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename=wyplaty_${presentCampaign.title}.xlsx`
+      );
       fileStream.pipe(res);
       await presentCampaign.deleteOne();
       console.log(req.user);
@@ -521,8 +619,7 @@ export const postCreateExcelFile = async (req, res, next) => {
       throw new Error(err);
     });
 
-3
-
+    3;
   } catch (error) {
     error.message = "Server bug";
     error.httpStatusCode = 500;
@@ -532,12 +629,14 @@ export const postCreateExcelFile = async (req, res, next) => {
 
 export const getCampaingsStory = async (req, res, next) => {
   try {
-    const oldCampaigns = await OldCampaigns.find({ownerId: req.user._id});
-    res.render("user/campaigns-story", { pageTitle: "Historia kampanii", oldCampaigns });
+    const oldCampaigns = await OldCampaigns.find({ ownerId: req.user._id });
+    res.render("user/campaigns-story", {
+      pageTitle: "Historia kampanii",
+      oldCampaigns,
+    });
   } catch (error) {
     error.message = "Server bug";
     error.httpStatusCode = 500;
     return next(error);
   }
-
-}
+};

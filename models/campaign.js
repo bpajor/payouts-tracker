@@ -70,9 +70,133 @@ campaignSchema.methods.updateCampaign = async function () {
     foundEmployees.splice(employeeToDeleteIndex, 1);
   });
   foundEmployees.forEach((employee) => {
-    this.employeesData.push({ employeeId: employee._id, workdays: [], bonusAmount: 0 });
+    this.employeesData.push({
+      employeeId: employee._id,
+      workdays: [],
+      bonusAmount: 0,
+    });
   });
   return await this.save();
+};
+
+campaignSchema.methods.calculateEmployeeMonthSalary = function (index) {
+  let monthSalary = 0;
+  const employee = this.employeesData[index];
+  monthSalary =
+    employee.bonusAmount +
+    employee.employeeId.hourlyRate *
+      employee.employeeId.dailyHours *
+      (employee.workdays.daysNormal.length +
+        employee.workdays.daysDelegation.length) +
+    this.delegationAmount * employee.workdays.daysDelegation.length +
+    (employee.employeeId.isDriver
+      ? employee.employeeId.driverAmount *
+        (employee.workdays.daysNormal.length +
+          employee.workdays.daysDelegation.length)
+      : 0);
+
+  return monthSalary;
+};
+
+campaignSchema.methods.calculateAllExpenses = function () {
+  let allEmpSalarySum = 0;
+  this.employeesData.forEach((employee) => {
+    const monthSalary =
+      employee.bonusAmount +
+      employee.employeeId.hourlyRate *
+        employee.employeeId.dailyHours *
+        (employee.workdays.daysNormal.length +
+          employee.workdays.daysDelegation.length) +
+      this.delegationAmount * employee.workdays.daysDelegation.length +
+      (employee.employeeId.isDriver
+        ? employee.employeeId.driverAmount *
+          (employee.workdays.daysNormal.length +
+            employee.workdays.daysDelegation.length)
+        : 0);
+    allEmpSalarySum += monthSalary;
+  });
+  return allEmpSalarySum;
+};
+
+campaignSchema.methods.calculateTopEmployees = function () {
+  const topEmps = [];
+  this.employeesData.forEach((employee, index) => {
+    const monthSalary = this.calculateEmployeeMonthSalary(index);
+    const emp = {
+      name: employee.employeeId.name,
+      surname: employee.employeeId.surname,
+      monthSalary,
+    };
+    if (topEmps.length < 3) {
+      topEmps.push(emp);
+      topEmps.sort((empOne, empTwo) => {
+        return empTwo.monthSalary - empOne.monthSalary;
+      });
+    } else {
+      if (emp.monthSalary > topEmps[2].monthSalary) {
+        topEmps[2] = emp;
+      }
+      topEmps.sort((empOne, empTwo) => {
+        return empTwo.monthSalary - empOne.monthSalary;
+      });
+    }
+  });
+  return topEmps;
+};
+
+campaignSchema.methods.extractEmployeesData = function () {
+  const employees = [];
+  this.employeesData.forEach((employee, index) => {
+    const employeeToPush = {
+      ...employee.employeeId._doc,
+      workdays: employee.workdays,
+      bonusAmount: employee.bonusAmount,
+    };
+    employeeToPush.monthSalary = this.calculateEmployeeMonthSalary(index);
+    // employee.bonusAmount +
+    // employee.employeeId.hourlyRate *
+    //   employee.employeeId.dailyHours *
+    //   (employee.workdays.daysNormal.length +
+    //     employee.workdays.daysDelegation.length) +
+    // this.delegationAmount *
+    //   employee.workdays.daysDelegation.length +
+    // (employee.employeeId.isDriver
+    //   ? employee.employeeId.driverAmount *
+    //     (employee.workdays.daysNormal.length +
+    //       employee.workdays.daysDelegation.length)
+    //   : 0);
+    //   +
+    // // (employee.employeeId.delegationAmount *
+    // //   employee.workdays.daysDelegation.length);
+    employees.push(employeeToPush);
+  });
+  return employees;
+};
+
+campaignSchema.methods.extractEmployeeData = function (employeeId) {
+  let employee;
+  const employeeIndex = this.employeesData.findIndex((emp) => {
+    return emp.employeeId._id.toString() === employeeId.toString();
+  });
+  employee = { ...this.employeesData[employeeIndex]["_doc"] };
+  if (!employee) {
+    throw new Error("Employee not found");
+  }
+  employee.monthSalary = this.calculateEmployeeMonthSalary(employeeIndex);
+  return employee;
+};
+
+campaignSchema.methods.updateEmployee = function (employeeId, bonusAmount, selectedDelegationDays, selectedNormalDays) {
+  const employeeIndex = this.employeesData.findIndex((emp) => {
+    return emp.employeeId._id.toString() === employeeId.toString();
+  });
+  this.employeesData[employeeIndex].workdays.daysDelegation = [
+    ...selectedDelegationDays,
+  ];
+  this.employeesData[employeeIndex].workdays.daysNormal = [
+    ...selectedNormalDays,
+  ];
+  this.employeesData[employeeIndex].bonusAmount = bonusAmount;
 };
 
 const Campaign = mongoose.model("Campaign", campaignSchema);

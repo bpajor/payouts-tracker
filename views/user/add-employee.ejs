@@ -9,6 +9,7 @@
   </header>
   <main class="auth">
     <form action="<%= edit ? `/edit-employee/${oldInput.id}` : "/add-employee" %>" method="POST" class="form" onsubmit="onFormSubmit(event)">
+      <input type="hidden" name="CSRFToken" value=<%= token %>>
         <p class="title"><%= edit ? 'Edytuj pracownika' : 'Dodaj pracownika'%></p>
         <% errors.forEach(error => {
             if (error.path === 'name') { %>
