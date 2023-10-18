@@ -4,7 +4,6 @@ import postAddEditEmployee from "../helpers/employeeAddEdit.js";
 import { Campaign } from "../models/campaign.js";
 import { ObjectId } from "mongodb";
 import fs from "fs";
-import ExcelJs from "exceljs";
 import { OldCampaigns } from "../models/oldCampaigns.js";
 
 export const getHome = (req, res, next) => {
@@ -315,32 +314,8 @@ export const getEndCampaign = async (req, res, next) => {
     })
       .findOne()
       .populate("employeesData.employeeId");
-    let employees = [];
-    presentCampaign.employeesData.forEach((employee) => {
-      const employeeToPush = {
-        ...employee.employeeId._doc,
-        workdays: employee.workdays,
-        bonusAmount: employee.bonusAmount,
-      };
-      employeeToPush.monthSalary =
-        employee.bonusAmount +
-        employee.employeeId.hourlyRate *
-          employee.employeeId.dailyHours *
-          (employee.workdays.daysNormal.length +
-            employee.workdays.daysDelegation.length) +
-        presentCampaign.delegationAmount *
-          employee.workdays.daysDelegation.length +
-        (employee.employeeId.isDriver
-          ? employee.employeeId.driverAmount *
-            (employee.workdays.daysNormal.length +
-              employee.workdays.daysDelegation.length)
-          : 0);
-      //   +
-      // // (employee.employeeId.delegationAmount *
-      // //   employee.workdays.daysDelegation.length);
-      employeeToPush.randomId = 10000000000 * Math.random().toFixed(10);
-      employees.push(employeeToPush);
-    });
+    const employees = presentCampaign.extractEmployeesData();
+
     return res.render("user/end-campaign", {
       pageTitle: "Zakończ kampanię",
       employees: employees,
@@ -353,58 +328,17 @@ export const getEndCampaign = async (req, res, next) => {
   }
 };
 
-export const getCreateExcelFile = (req, res, next) => {
-  res.render("user/create-excel-file", {
-    pageTitle: "test",
-  });
-};
-
-// export const postCreateExcelFile = async (req, res, next) => {
-//   console.log("test");
-//   const workbook = new ExcelJs.Workbook();
-//   console.log(workbook);
-//   workbook.addWorksheet("MySheet");
-//   try {
-//     await workbook.xlsx.writeFile("./test.xlsx");
-//   } catch (err) {
-//     console.log(err);
-//   }
-// };
-
 export const postCreateExcelFile = async (req, res, next) => {
   const presentCampaign = req.user.campaign;
 
-  let allExpenses = 0;
-  presentCampaign.employeesData.forEach((employee) => {
-    allExpenses +=
-      employee.employeeId.hourlyRate *
-        employee.employeeId.dailyHours *
-        (employee.workdays.daysNormal.length +
-          employee.workdays.daysDelegation.length) +
-      presentCampaign.delegationAmount *
-        employee.workdays.daysDelegation.length +
-      (employee.employeeId.isDriver
-        ? employee.employeeId.driverAmount *
-          (employee.workdays.daysDelegation.length +
-            employee.workdays.daysNormal.length)
-        : 0) +
-      employee.bonusAmount;
-  });
+  const allExpenses = presentCampaign.calculateAllExpenses();
 
   const employeesData = [];
-  presentCampaign.employeesData.forEach((employee) => {
+  presentCampaign.employeesData.forEach((employee, index) => {
     const employeeData = {
       name: employee.employeeId.name,
       surname: employee.employeeId.surname,
-      payment:
-        employee.employeeId.hourlyRate *
-          employee.employeeId.dailyHours *
-          (employee.workdays.daysNormal.length +
-            employee.workdays.daysDelegation.length) +
-        presentCampaign.delegationAmount *
-          employee.workdays.daysDelegation.length +
-        (employee.employeeId.isDriver ? employee.employeeId.driverAmount : 0) +
-        employee.bonusAmount,
+      payment: presentCampaign.calculateEmployeeMonthSalary(index),
       daysWorked:
         employee.workdays.daysNormal.length +
         employee.workdays.daysDelegation.length,
@@ -420,181 +354,10 @@ export const postCreateExcelFile = async (req, res, next) => {
     employeesData,
   });
 
-  await oldCampaign.save();
-
-  const workbook = new ExcelJs.Workbook();
-  const worksheet = workbook.addWorksheet("Pracownicy");
-  worksheet.getCell("A1").value = "Lp.";
-  worksheet.getCell("B1").value = "Imię";
-  worksheet.getCell("C1").value = "Nazwisko";
-  worksheet.getCell("D1").value = "Dni";
-  worksheet.getCell("E1").value = "Stawka";
-  worksheet.getCell("F1").value = "Liczba godzin";
-  worksheet.getCell("G1").value = "Kwota";
-  worksheet.getCell("H1").value = "Delegacja";
-  worksheet.getCell("I1").value = "Kierowca";
-  worksheet.getCell("J1").value = "Premia";
-  worksheet.getCell("K1").value = "Razem";
-
-  presentCampaign.employeesData.forEach((employee, index) => {
-    console.log(presentCampaign);
-    const rowIndex = index + 2;
-    worksheet.getCell(`A${rowIndex}`).value = rowIndex - 1;
-    worksheet.getCell(`B${rowIndex}`).value = employee.employeeId.name;
-    worksheet.getCell(`C${rowIndex}`).value = employee.employeeId.surname;
-    worksheet.getCell(`D${rowIndex}`).value =
-      employee.workdays.daysNormal.length +
-      employee.workdays.daysDelegation.length;
-    worksheet.getCell(`E${rowIndex}`).value = employee.employeeId.hourlyRate;
-    worksheet.getCell(`F${rowIndex}`).value = employee.employeeId.dailyHours;
-    worksheet.getCell(`G${rowIndex}`).value =
-      employee.employeeId.hourlyRate *
-      employee.employeeId.dailyHours *
-      (employee.workdays.daysNormal.length +
-        employee.workdays.daysDelegation.length);
-    worksheet.getCell(`H${rowIndex}`).value =
-      employee.workdays.daysDelegation.length *
-      presentCampaign.delegationAmount;
-    worksheet.getCell(`I${rowIndex}`).value = employee.employeeId.isDriver
-      ? employee.employeeId.driverAmount *
-        (employee.workdays.daysNormal.length +
-          employee.workdays.daysDelegation.length)
-      : 0;
-    worksheet.getCell(`J${rowIndex}`).value = employee.bonusAmount;
-    // worksheet.getCell(`K${rowIndex}`).value =
-    //   employee.employeeId.hourlyRate *
-    //     employee.employeeId.dailyHours *
-    //     (employee.workdays.daysNormal.length +
-    //       employee.workdays.daysDelegation.length) +
-    //   employee.workdays.daysDelegation.length *
-    //     presentCampaign.delegationAmount +
-    //   (employee.employeeId.isDriver
-    //     ? employee.employeeId.driverAmount *
-    //       (employee.workdays.daysNormal.length +
-    //         employee.workdays.daysDelegation.length)
-    //     : 0) +
-    //   employee.bonusAmount;
-  });
-
-  const employeeSumCells = [];
-  presentCampaign.employeesData.forEach((employee, index) => {
-    const rowIndex = index + 2;
-    employeeSumCells.push([worksheet.getCell(`K${rowIndex}`)]);
-  });
-
-  employeeSumCells.forEach((cell, index) => {
-    let formula_string = `G${index + 2}+H${index + 2}+I${index + 2}+J${
-      index + 2
-    }+`;
-    // for (let i = 0; i <= presentCampaign.employeesData.length - 1; i++) {
-    //   formula_string += `G${index + 2}+H${index + 2}+I${index + 2}+J${
-    //     index + 2
-    //   }+`;
-    // }
-    formula_string = formula_string.slice(0, -1);
-    cell[0].value = { formula: formula_string };
-    cell[0].font = { bold: true };
-  });
-
-  const sumCells = [
-    worksheet.getCell(`F${presentCampaign.employeesData.length + 2}`),
-    worksheet.getCell(`G${presentCampaign.employeesData.length + 2}`),
-    worksheet.getCell(`H${presentCampaign.employeesData.length + 2}`),
-    worksheet.getCell(`I${presentCampaign.employeesData.length + 2}`),
-    worksheet.getCell(`J${presentCampaign.employeesData.length + 2}`),
-    worksheet.getCell(`K${presentCampaign.employeesData.length + 2}`),
-  ];
-
-  sumCells.forEach((cell, index) => {
-    cell.font = { bold: true };
-    if (!index) {
-      cell.value = "Razem";
-      return;
-    }
-    let formula_string = "";
-
-    for (let i = 2; i <= presentCampaign.employeesData.length + 1; i++) {
-      formula_string += `${String.fromCharCode(index + 70)}${i}+`;
-    }
-    formula_string = formula_string.slice(0, -1);
-    cell.value = { formula: formula_string };
-  });
-
-  // sumCells.forEach((cell, index) => {
-  //   switch (index) {
-  //     case 0:
-  //       cell.value = "Razem";
-  //       break;
-
-  //     case 1:
-  //       let pureSalary = 0;
-  //       presentCampaign.employeesData.forEach((employee) => {
-  //         pureSalary +=
-  //           employee.employeeId.hourlyRate *
-  //           employee.employeeId.dailyHours *
-  //           (employee.workdays.daysNormal.length +
-  //             employee.workdays.daysDelegation.length);
-  //       });
-  //       cell.value = pureSalary;
-  //       break;
-
-  //     case 2:
-  //       let pureDelegation = 0;
-  //       presentCampaign.employeesData.forEach((employee) => {
-  //         pureDelegation +=
-  //           presentCampaign.delegationAmount *
-  //           employee.workdays.daysDelegation.length;
-  //       });
-  //       cell.value = pureDelegation;
-  //       break;
-
-  //     case 3:
-  //       let pureDriver = 0;
-  //       presentCampaign.employeesData.forEach((employee) => {
-  //         pureDriver += employee.employeeId.isDriver
-  //           ? employee.employeeId.driverAmount *
-  //             (employee.workdays.daysNormal.length +
-  //               employee.workdays.daysDelegation.length)
-  //           : 0;
-  //       });
-  //       cell.value = pureDriver;
-  //       break;
-
-  //     case 4:
-  //       let pureBonus = 0;
-  //       presentCampaign.employeesData.forEach((employee) => {
-  //         pureBonus += employee.bonusAmount;
-  //       });
-  //       cell.value = pureBonus;
-  //       break;
-
-  //     case 5:
-  //       // cell.value = allExpenses;
-  //       let formula_string = "";
-  //       for (let i = 2; i <= presentCampaign.employeesData.length + 1; i++) {
-  //         formula_string += `K${i}+`;
-  //       }
-  //       formula_string = formula_string.slice(0, -1);
-  //       cell.value = { formula: formula_string };
-  //       break;
-  //   }
-  //   cell.font = { bold: true };
-  // });
-
-  worksheet.eachRow((row) => {
-    row.eachCell((cell) => {
-      cell.border = {
-        top: { style: "thin" },
-        left: { style: "thin" },
-        bottom: { style: "thin" },
-        right: { style: "thin" },
-      };
-    });
-  });
-
-  workbook.calcProperties.fullCalcOnLoad = true;
+  const workbook = presentCampaign.createExcelFile();
 
   try {
+    await oldCampaign.save();
     const filePath = `wypłaty_${presentCampaign.title}.xlsx`;
 
     await workbook.xlsx.writeFile(filePath);
@@ -612,7 +375,6 @@ export const postCreateExcelFile = async (req, res, next) => {
       );
       fileStream.pipe(res);
       await presentCampaign.deleteOne();
-      console.log(req.user);
     });
 
     fileStream.on("error", (err) => {
@@ -621,6 +383,7 @@ export const postCreateExcelFile = async (req, res, next) => {
 
     3;
   } catch (error) {
+    console.log(error);
     error.message = "Server bug";
     error.httpStatusCode = 500;
     return next(error);

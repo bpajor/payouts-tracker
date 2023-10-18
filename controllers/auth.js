@@ -47,7 +47,7 @@ export const postSignup = async (req, res, next) => {
       email,
       password: hashedPassword,
     });
-    const saveUserResult = await user.save();
+    await user.save();
     res.redirect("/login");
   } catch (error) {
     error.message = "Server bug";
@@ -57,7 +57,6 @@ export const postSignup = async (req, res, next) => {
 };
 
 export const getLogin = (req, res, next) => {
-  console.log(generateToken(req));
   res.render("auth/login", {
     pageTitle: "Zaloguj się",
     errors: [],
@@ -69,7 +68,6 @@ export const postLogin = async (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
   const oldInput = { email, password };
-  console.log(req.body);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = new Error("Login error");
@@ -96,14 +94,13 @@ export const postLogin = async (req, res, next) => {
     req.session.isLoggedIn = true;
     req.session.user = foundUser;
     req.session.save((err) => {
-      console.log('logging...')
+      console.log("logging...");
       if (err) {
         throw new Error("Server bug");
       }
-      console.log('after login');
+      console.log("after login");
       res.redirect("/");
     });
-
   } catch (error) {
     switch (error.message) {
       case "Server bug":
@@ -117,9 +114,7 @@ export const postLogin = async (req, res, next) => {
         break;
     }
     error.view = "auth/login";
-    // const reasons = errors.array().map((reason) => {
-    //   return { path: reason.path, msg: reason.msg };
-    // });
+
     const reasons = [
       {
         path: error.message === "Bad email" ? "email" : "password",

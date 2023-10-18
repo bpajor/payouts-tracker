@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Employee } from "./employee.js";
+import ExcelJS from "exceljs";
 
 const Schema = mongoose.Schema;
 
@@ -153,21 +154,7 @@ campaignSchema.methods.extractEmployeesData = function () {
       bonusAmount: employee.bonusAmount,
     };
     employeeToPush.monthSalary = this.calculateEmployeeMonthSalary(index);
-    // employee.bonusAmount +
-    // employee.employeeId.hourlyRate *
-    //   employee.employeeId.dailyHours *
-    //   (employee.workdays.daysNormal.length +
-    //     employee.workdays.daysDelegation.length) +
-    // this.delegationAmount *
-    //   employee.workdays.daysDelegation.length +
-    // (employee.employeeId.isDriver
-    //   ? employee.employeeId.driverAmount *
-    //     (employee.workdays.daysNormal.length +
-    //       employee.workdays.daysDelegation.length)
-    //   : 0);
-    //   +
-    // // (employee.employeeId.delegationAmount *
-    // //   employee.workdays.daysDelegation.length);
+    employeeToPush.randomId = 10000000000 * Math.random().toFixed(10);
     employees.push(employeeToPush);
   });
   return employees;
@@ -186,7 +173,12 @@ campaignSchema.methods.extractEmployeeData = function (employeeId) {
   return employee;
 };
 
-campaignSchema.methods.updateEmployee = function (employeeId, bonusAmount, selectedDelegationDays, selectedNormalDays) {
+campaignSchema.methods.updateEmployee = function (
+  employeeId,
+  bonusAmount,
+  selectedDelegationDays,
+  selectedNormalDays
+) {
   const employeeIndex = this.employeesData.findIndex((emp) => {
     return emp.employeeId._id.toString() === employeeId.toString();
   });
@@ -197,6 +189,100 @@ campaignSchema.methods.updateEmployee = function (employeeId, bonusAmount, selec
     ...selectedNormalDays,
   ];
   this.employeesData[employeeIndex].bonusAmount = bonusAmount;
+};
+
+campaignSchema.methods.createExcelFile = function () {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Pracownicy");
+  worksheet.getCell("A1").value = "Lp.";
+  worksheet.getCell("B1").value = "Imię";
+  worksheet.getCell("C1").value = "Nazwisko";
+  worksheet.getCell("D1").value = "Dni";
+  worksheet.getCell("E1").value = "Stawka";
+  worksheet.getCell("F1").value = "Liczba godzin";
+  worksheet.getCell("G1").value = "Kwota";
+  worksheet.getCell("H1").value = "Delegacja";
+  worksheet.getCell("I1").value = "Kierowca";
+  worksheet.getCell("J1").value = "Premia";
+  worksheet.getCell("K1").value = "Razem";
+
+  this.employeesData.forEach((employee, index) => {
+    const rowIndex = index + 2;
+    worksheet.getCell(`A${rowIndex}`).value = rowIndex - 1;
+    worksheet.getCell(`B${rowIndex}`).value = employee.employeeId.name;
+    worksheet.getCell(`C${rowIndex}`).value = employee.employeeId.surname;
+    worksheet.getCell(`D${rowIndex}`).value =
+      employee.workdays.daysNormal.length +
+      employee.workdays.daysDelegation.length;
+    worksheet.getCell(`E${rowIndex}`).value = employee.employeeId.hourlyRate;
+    worksheet.getCell(`F${rowIndex}`).value = employee.employeeId.dailyHours;
+    worksheet.getCell(`G${rowIndex}`).value =
+      employee.employeeId.hourlyRate *
+      employee.employeeId.dailyHours *
+      (employee.workdays.daysNormal.length +
+        employee.workdays.daysDelegation.length);
+    worksheet.getCell(`H${rowIndex}`).value =
+      employee.workdays.daysDelegation.length * this.delegationAmount;
+    worksheet.getCell(`I${rowIndex}`).value = employee.employeeId.isDriver
+      ? employee.employeeId.driverAmount *
+        (employee.workdays.daysNormal.length +
+          employee.workdays.daysDelegation.length)
+      : 0;
+    worksheet.getCell(`J${rowIndex}`).value = employee.bonusAmount;
+  });
+
+  const employeeSumCells = [];
+  this.employeesData.forEach((employee, index) => {
+    const rowIndex = index + 2;
+    employeeSumCells.push([worksheet.getCell(`K${rowIndex}`)]);
+  });
+
+  employeeSumCells.forEach((cell, index) => {
+    let formula_string = `G${index + 2}+H${index + 2}+I${index + 2}+J${
+      index + 2
+    }+`;
+    formula_string = formula_string.slice(0, -1);
+    cell[0].value = { formula: formula_string };
+    cell[0].font = { bold: true };
+  });
+
+  const sumCells = [
+    worksheet.getCell(`F${this.employeesData.length + 2}`),
+    worksheet.getCell(`G${this.employeesData.length + 2}`),
+    worksheet.getCell(`H${this.employeesData.length + 2}`),
+    worksheet.getCell(`I${this.employeesData.length + 2}`),
+    worksheet.getCell(`J${this.employeesData.length + 2}`),
+    worksheet.getCell(`K${this.employeesData.length + 2}`),
+  ];
+
+  sumCells.forEach((cell, index) => {
+    cell.font = { bold: true };
+    if (!index) {
+      cell.value = "Razem";
+      return;
+    }
+    let formula_string = "";
+
+    for (let i = 2; i <= this.employeesData.length + 1; i++) {
+      formula_string += `${String.fromCharCode(index + 70)}${i}+`;
+    }
+    formula_string = formula_string.slice(0, -1);
+    cell.value = { formula: formula_string };
+  });
+
+  worksheet.eachRow((row) => {
+    row.eachCell((cell) => {
+      cell.border = {
+        top: { style: "thin" },
+        left: { style: "thin" },
+        bottom: { style: "thin" },
+        right: { style: "thin" },
+      };
+    });
+  });
+
+  workbook.calcProperties.fullCalcOnLoad = true;
+  return workbook;
 };
 
 const Campaign = mongoose.model("Campaign", campaignSchema);

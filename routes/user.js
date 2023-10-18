@@ -5,7 +5,6 @@ import {
   getCampaign,
   getCampaignDetails,
   getCampaingsStory,
-  getCreateExcelFile,
   getEditEmployee,
   getEmployeeDetails,
   getEmployees,
@@ -113,8 +112,6 @@ router.post(
 );
 
 router.get("/end-campaign", isAuth, getEndCampaign);
-
-router.get("/create-excel-file", isAuth, getCreateExcelFile);
 
 router.post(
   "/create-excel-file",

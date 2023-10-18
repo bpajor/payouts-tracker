@@ -25,7 +25,7 @@
                 <h1>Do końca kampani pozostało: <%= daysLeft %> dni</h1>
                 <h2>Bieżące wydatki: <%= allEmpSalarySum %> PLN</h2>
               <%} else {%>
-                <h1>Kampania zakończyła się: <%= daysLeft %> dni temu</h1>
+                <h1>Kampania zakończyła się: <%= -daysLeft %> dni temu</h1>
                 <h2>Bieżące wydatki: <%= allEmpSalarySum %> PLN</h2>
               <%}%>
           </div>

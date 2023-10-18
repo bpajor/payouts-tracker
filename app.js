@@ -12,8 +12,6 @@ import { Campaign } from "./models/campaign.js";
 import mongoose from "mongoose";
 import { generateToken } from "./helpers/csrf.js";
 
-console.log(process.type);
-
 const MongoDBStore = ConnectMongoDBSession(session);
 
 const __filename = fileURLToPath(import.meta.url);
@@ -36,28 +34,8 @@ app.use(
   })
 );
 
-// app.use((req, res, next) => {
-//   res.locals.isAuthenticated = req.session.isLoggedIn;
-//   next();
-// })
-
 app.use(async (req, res, next) => {
-  // try {
-
-    // }
-  // } catch (error) {
-  //   console.log(error);
-  //   error.message = "Server bug";
-  //   error.httpStatusCode = 500;
-  //   return next(error);
-  // }
-
-  // res.locals.token = generateToken(req);
-  // req.headers.CSRFToken = generateToken(req);
-  // console.log(req.headers);
-
   try {
-    console.log(req);
     res.locals.token = generateToken(req);
     res.locals.isAuthenticated = req.session.isLoggedIn;
     const loggedInUser = req.session.user;
@@ -71,9 +49,7 @@ app.use(async (req, res, next) => {
       .findOne()
       .populate("employeesData.employeeId");
     loggedInUser.campaign = presentCampaign;
-    // console.log(loggedInUser);
     req.user = loggedInUser;
-    // console.log(req.user);
     next();
   } catch (error) {
     console.log(error);
@@ -112,7 +88,6 @@ app.use((error, req, res, next) => {
       });
 
     case "Server bug":
-      console.log('in error middleware')
       res
         .status(error.httpStatusCode)
         .render("error/500", { pageTitle: "Błąd Serwera" });

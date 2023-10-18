@@ -45,7 +45,7 @@
                 </thead>
                 <tbody>
                     <% for (let employee of employees) { %>
-                        <tr class="employee-row" id=<%= employee._id %>>
+                        <tr class="employee-row" id=<%= employee.randomId %>>
                             <td class="employee-full-name"><%= employee.name %>  <%= employee.surname %></td>
                             <td><%= employee.monthSalary%></td>
                             <td><%= employee.workdays.daysNormal.length + employee.workdays.daysDelegation.length%> (<%=employee.workdays.daysDelegation.length%> w delegacji)</td>
