@@ -4,7 +4,6 @@ import { User } from "../models/user.js";
 import { generateToken } from "../helpers/csrf.js";
 
 export const getSignup = (req, res, next) => {
-  console.log(generateToken(req));
   res.render("auth/signup", {
     pageTitle: "Zarejestruj się",
     errors: [],
@@ -50,6 +49,7 @@ export const postSignup = async (req, res, next) => {
     await user.save();
     res.redirect("/login");
   } catch (error) {
+    console.log(error);
     error.message = "Server bug";
     error.httpStatusCode = 500;
     return next(error);
@@ -102,6 +102,7 @@ export const postLogin = async (req, res, next) => {
       res.redirect("/");
     });
   } catch (error) {
+    console.log(error);
     switch (error.message) {
       case "Server bug":
         error.httpStatusCode = 500;

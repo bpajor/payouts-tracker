@@ -25,7 +25,7 @@
                         <td class="option--item">
                             <div class="option--item-control">
                                 <p>Sortuj: </p>
-                                <select id="sort-select" name="campaign-details">
+                                <select id="sort-select" name="end-campaign">
                                     <option>-</option>
                                     <option>Alfabetycznie (rosnąco)</option>
                                     <option>Alfabetycznie (malejąco)</option>
@@ -60,7 +60,7 @@
                                 <td class="bonus"><%=employee.bonusAmount%></td>
                                 <td><%= employee.workdays.daysNormal.length + employee.workdays.daysDelegation.length%> (<%=employee.workdays.daysDelegation.length%> w delegacji)</td>
                                 <td>
-                                    <a class="btn-employee">Szczegóły</a>
+                                    <a class="btn-employee" href="/employee-details/<%=employee._id%>">Szczegóły</a>
                                 </td>
                             </tr>
                         <% } %>
@@ -70,5 +70,6 @@
     </main>
   <%-include('../includes/logout.ejs')%>
   <%-include('../includes/sum-up.ejs')%>
+  <%-include('../includes/sorting.ejs')%>
 </body>
 </html>

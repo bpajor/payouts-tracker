@@ -31,7 +31,14 @@ const employeeSchema = new Schema({
     ref: "User",
     required: true,
   },
+  randomId: {
+    type: String,
+    required: true,
+  }
 });
+
+// employeeSchema.methods.addRandomId = function () {
+// }
 
 const Employee = mongoose.model("Employee", employeeSchema);
 export { Employee };

@@ -26,11 +26,12 @@
             <% let campaignStart = new Date(oldCampaign.endtime);
             campaignStart.setDate(campaignStart.getDate() - 30); %>
             <h2>Czas trwania kampanii: <%= campaignStart.toLocaleDateString('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' }) %> - <%= new Date(oldCampaign.endtime).toLocaleDateString('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' }) %> </h2>
-            <button class='message-item-button' id="expandable-button" onclick="toggleDetails()">
+            <button class='message-item-button' onclick="toggleDetails(<%=parseInt(oldCampaign._id.valueOf())%>)">
               Szczegóły
               <i class="fa-solid fa-chevron-down"></i>
             </button>
-            <div class="table-control" style="display: none;" id="expandable-details" >
+            <%console.log(oldCampaign._id)%>
+            <div class="table-control" style="display: none;" id="<%=parseInt(oldCampaign._id.valueOf())%>" >
                   <table>
                       <thead>
                               <tr style="background-color: #B97318;">

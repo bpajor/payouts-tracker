@@ -47,7 +47,6 @@ campaignSchema.methods.addCampaign = async function (ownerId) {
     employees.push({ employeeId: employee._id, workdays: [], bonusAmount: 0 });
   });
   this.employeesData = employees;
-  console.log(this.employeesData);
   return await this.save();
 };
 
@@ -101,19 +100,8 @@ campaignSchema.methods.calculateEmployeeMonthSalary = function (index) {
 
 campaignSchema.methods.calculateAllExpenses = function () {
   let allEmpSalarySum = 0;
-  this.employeesData.forEach((employee) => {
-    const monthSalary =
-      employee.bonusAmount +
-      employee.employeeId.hourlyRate *
-        employee.employeeId.dailyHours *
-        (employee.workdays.daysNormal.length +
-          employee.workdays.daysDelegation.length) +
-      this.delegationAmount * employee.workdays.daysDelegation.length +
-      (employee.employeeId.isDriver
-        ? employee.employeeId.driverAmount *
-          (employee.workdays.daysNormal.length +
-            employee.workdays.daysDelegation.length)
-        : 0);
+  this.employeesData.forEach((employee, index) => {
+    const monthSalary = this.calculateEmployeeMonthSalary(index);
     allEmpSalarySum += monthSalary;
   });
   return allEmpSalarySum;
@@ -197,7 +185,7 @@ campaignSchema.methods.createExcelFile = function () {
   worksheet.getCell("A1").value = "Lp.";
   worksheet.getCell("B1").value = "Imię";
   worksheet.getCell("C1").value = "Nazwisko";
-  worksheet.getCell("D1").value = "Dni";
+  worksheet.getCell("D1").value = "Dni (delegacja)";
   worksheet.getCell("E1").value = "Stawka";
   worksheet.getCell("F1").value = "Liczba godzin";
   worksheet.getCell("G1").value = "Kwota";
@@ -211,9 +199,10 @@ campaignSchema.methods.createExcelFile = function () {
     worksheet.getCell(`A${rowIndex}`).value = rowIndex - 1;
     worksheet.getCell(`B${rowIndex}`).value = employee.employeeId.name;
     worksheet.getCell(`C${rowIndex}`).value = employee.employeeId.surname;
-    worksheet.getCell(`D${rowIndex}`).value =
+    worksheet.getCell(`D${rowIndex}`).value = `${
       employee.workdays.daysNormal.length +
-      employee.workdays.daysDelegation.length;
+      employee.workdays.daysDelegation.length
+    }(${employee.workdays.daysDelegation.length})`;
     worksheet.getCell(`E${rowIndex}`).value = employee.employeeId.hourlyRate;
     worksheet.getCell(`F${rowIndex}`).value = employee.employeeId.dailyHours;
     worksheet.getCell(`G${rowIndex}`).value =

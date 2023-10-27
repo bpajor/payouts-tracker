@@ -29,7 +29,7 @@
                       <th>Zarobione pieniądze (PLN)</th>
                       <th>Dni w pracy</th>
                       <th>Stawka na godzinę (PLN)</th>
-                      <th>Czy delegacja</th>
+                      <th>Czy kierowca</th>
                       <th>Godzin na dzień</th>
                       <th>Premia (PLN)</th>
                     </tr>
@@ -39,7 +39,7 @@
                       <td><%=employee.monthSalary%></td>
                       <td><%= employee.workdays.daysNormal.length + employee.workdays.daysDelegation.length %></td>
                       <td><%= employee.employeeId.hourlyRate%></td>
-                      <td><%= employee.employeeId.isDelegation ? `Tak (${employee.employeeId.delegationAmount} PLN)` : 'Nie'%></td>
+                      <td><%= employee.employeeId.isDriver ? `Tak (${employee.employeeId.driverAmount} PLN)` : 'Nie'%></td>
                       <td><%= employee.employeeId.dailyHours%></td>
                       <td><%=employee.bonusAmount%></td>
                     </tr>

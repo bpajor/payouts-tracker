@@ -1,6 +1,7 @@
 <script>
-    function toggleDetails() {
-        var detailsDiv = document.getElementById("expandable-details");
+    function toggleDetails(div_id) {
+        console.log(div_id);
+        let detailsDiv = document.getElementById(div_id);
         if (detailsDiv.style.display === "none") {
             detailsDiv.style.display = "block";
         } else {

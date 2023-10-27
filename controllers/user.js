@@ -17,12 +17,17 @@ export const getEmployees = async (req, res, next) => {
       .equals(req.user._id);
     if (!foundEmployees.length) {
       foundEmployees = undefined;
+    } else {
+      foundEmployees.forEach((employee, index) => {
+        employee.randomId = 10000000000 * Math.random().toFixed(10);
+      });
     }
     res.render("user/employees", {
       pageTitle: "Twoi pracownicy",
       employees: foundEmployees,
     });
   } catch (error) {
+    console.log(error);
     error.message = "Server bug";
     error.httpStatusCode = 500;
     return next(error);
@@ -45,7 +50,6 @@ export const getEditEmployee = async (req, res, next) => {
       throw new Error("Employee not found");
     }
     const foundEmployee = await Employee.findById(req.params.employeeId);
-    console.log(foundEmployee);
     if (!foundEmployee) {
       throw new Error("Employee not found");
     }
@@ -61,7 +65,6 @@ export const getEditEmployee = async (req, res, next) => {
       delegationAmount: foundEmployee.delegationAmount,
       id: _id.toString(),
     };
-    console.log(oldInput);
     res.render("user/add-employee", {
       pageTitle: "Edytuj pracownika",
       errors: [],
@@ -70,6 +73,7 @@ export const getEditEmployee = async (req, res, next) => {
       edit: true,
     });
   } catch (error) {
+    console.log(error);
     if (error.message === "Employee not found") {
       error.httpStatusCode = 404;
     } else {
@@ -80,7 +84,6 @@ export const getEditEmployee = async (req, res, next) => {
 };
 
 export const postAddEmployee = async (req, res, next) => {
-  console.log(req.params);
   const errors = validationResult(req);
   try {
     await postAddEditEmployee(req, res, next, errors, "Add");
@@ -97,6 +100,7 @@ export const postEditEmployee = async (req, res, next) => {
   try {
     await postAddEditEmployee(req, res, next, errors, "Edit");
   } catch (error) {
+    console.log(error);
     if (error.message === "Employee not found") {
       error.httpStatusCode = 404;
     } else {
@@ -108,6 +112,7 @@ export const postEditEmployee = async (req, res, next) => {
 };
 
 export const postDeleteEmployee = async (req, res, next) => {
+  console.log("in post delete endpoint");
   try {
     if (!ObjectId.isValid(req.params.employeeId)) {
       throw new Error("Employee not found");
@@ -122,7 +127,10 @@ export const postDeleteEmployee = async (req, res, next) => {
       return next(error);
     }
     await employee.deleteOne();
-    await req.user.campaign.updateCampaign();
+    console.log("employee should be deleted");
+    if (req.user.campaign) {
+      await req.user.campaign.updateCampaign();
+    }
     res.redirect("/employees");
   } catch (error) {
     console.log(error);
@@ -205,6 +213,7 @@ export const postUpdateCampaign = async (req, res, next) => {
     const campaign = await Campaign.findById(campaignId);
     campaign.updateCampaign(req.user._id);
   } catch (error) {
+    console.log(error);
     error.message = "Server bug";
     error.httpStatusCode = 500;
     return next(error);
@@ -231,6 +240,9 @@ export const getCampaignDetails = async (req, res, next) => {
     })
       .findOne()
       .populate("employeesData.employeeId");
+    if (!presentCampaign) {
+      return res.redirect("/");
+    }
     const employees = presentCampaign.extractEmployeesData();
     return res.render("user/campaign-details", {
       pageTitle: "Szczegóły kampanii",
@@ -238,6 +250,7 @@ export const getCampaignDetails = async (req, res, next) => {
       campaignId: presentCampaign._id,
     });
   } catch (error) {
+    console.log(error);
     error.message = "Server bug";
     error.httpStatusCode = 500;
     return next(error);
@@ -258,11 +271,12 @@ export const getEmployeeDetails = async (req, res, next) => {
 
     const campaignEndTime = presentCampaign.endtime;
     return res.render("user/employee-details", {
-      pageTitle: "Sczegóły pracownika",
+      pageTitle: "Szczegóły pracownika",
       employee,
       campaignEndTime,
     });
   } catch (error) {
+    console.log(error);
     if (error.message === "Employee not found") {
       error.httpStatusCode = 404;
     } else {
@@ -274,7 +288,6 @@ export const getEmployeeDetails = async (req, res, next) => {
 };
 
 export const postUpdateEmployee = async (req, res, next) => {
-  console.log(req.body);
   let selectedDelegationDays = req.body["datesDelegation"].split(", ");
   let selectedNormalDays = req.body["datesNormal"].split(", ");
   if (selectedDelegationDays[0] === "") {
@@ -290,6 +303,9 @@ export const postUpdateEmployee = async (req, res, next) => {
     })
       .findOne()
       .populate("employeesData.employeeId");
+    if (!presentCampaign) {
+      return res.redirect("/");
+    }
     presentCampaign.updateEmployee(
       req.params.employeeId,
       bonusAmount,
@@ -314,7 +330,11 @@ export const getEndCampaign = async (req, res, next) => {
     })
       .findOne()
       .populate("employeesData.employeeId");
+    if (!presentCampaign) {
+      return res.redirect("/");
+    }
     const employees = presentCampaign.extractEmployeesData();
+    console.log(employees);
 
     return res.render("user/end-campaign", {
       pageTitle: "Zakończ kampanię",
@@ -322,6 +342,7 @@ export const getEndCampaign = async (req, res, next) => {
       campaignId: presentCampaign._id,
     });
   } catch (error) {
+    console.log(error);
     error.message = "Server bug";
     error.httpStatusCode = 500;
     return next(error);
@@ -330,6 +351,10 @@ export const getEndCampaign = async (req, res, next) => {
 
 export const postCreateExcelFile = async (req, res, next) => {
   const presentCampaign = req.user.campaign;
+
+  if (!presentCampaign) {
+    return res.redirect("/");
+  }
 
   const allExpenses = presentCampaign.calculateAllExpenses();
 
@@ -398,6 +423,49 @@ export const getCampaingsStory = async (req, res, next) => {
       oldCampaigns,
     });
   } catch (error) {
+    console.log(error);
+    error.message = "Server bug";
+    error.httpStatusCode = 500;
+    return next(error);
+  }
+};
+
+export const postNonExcel = async (req, res, next) => {
+  const presentCampaign = req.user.campaign;
+
+  if (!presentCampaign) {
+    return res.redirect("/");
+  }
+
+  const allExpenses = presentCampaign.calculateAllExpenses();
+
+  const employeesData = [];
+  presentCampaign.employeesData.forEach((employee, index) => {
+    const employeeData = {
+      name: employee.employeeId.name,
+      surname: employee.employeeId.surname,
+      payment: presentCampaign.calculateEmployeeMonthSalary(index),
+      daysWorked:
+        employee.workdays.daysNormal.length +
+        employee.workdays.daysDelegation.length,
+      randomId: 10000000000 * Math.random().toFixed(10),
+    };
+    employeesData.push(employeeData);
+  });
+
+  const oldCampaign = new OldCampaigns({
+    title: presentCampaign.title,
+    ownerId: presentCampaign.ownerId,
+    allExpenses,
+    endtime: presentCampaign.endtime,
+    employeesData,
+  });
+  try {
+    await oldCampaign.save();
+    await presentCampaign.deleteOne();
+    return res.redirect("/campaigns-story");
+  } catch (error) {
+    console.log(error);
     error.message = "Server bug";
     error.httpStatusCode = 500;
     return next(error);

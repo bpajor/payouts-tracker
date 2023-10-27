@@ -16,6 +16,7 @@ import {
   postDeleteCampaign,
   postDeleteEmployee,
   postEditEmployee,
+  postNonExcel,
   postUpdateCampaign,
   postUpdateEmployee,
 } from "../controllers/user.js";
@@ -113,6 +114,8 @@ router.post(
 
 router.get("/end-campaign", isAuth, getEndCampaign);
 
+router.post('/end-campaign/non-excel', csrfSynchronisedProtection, isAuth, postNonExcel)
+
 router.post(
   "/create-excel-file",
   csrfSynchronisedProtection,
@@ -121,3 +124,4 @@ router.post(
 );
 
 router.get("/campaigns-story", isAuth, getCampaingsStory);
+

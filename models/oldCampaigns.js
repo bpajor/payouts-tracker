@@ -37,6 +37,9 @@ const oldCampaignsSchema = new Schema({
         type: Number,
         required: true,
       },
+      randomId: {
+        type: Number
+      }
     },
   ],
 });

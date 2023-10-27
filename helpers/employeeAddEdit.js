@@ -37,6 +37,7 @@ const postAddEditEmployee = async (req, res, next, errors, mode) => {
       isDriver,
       dailyHours,
       bossId: req.user._id,
+      randomId: 10000000000 * Math.random().toFixed(10),
     });
     if (driverAmount) {
       employee.driverAmount = driverAmount;
@@ -54,6 +55,7 @@ const postAddEditEmployee = async (req, res, next, errors, mode) => {
     if (driverAmount) {
       employee.driverAmount = driverAmount;
     }
+    employee.randomId = 10000000000 * Math.random().toFixed(10);
   }
   await employee.save();
   const userCampaign = req.user.campaign;

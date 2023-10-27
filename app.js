@@ -107,4 +107,11 @@ app.use((error, req, res, next) => {
   }
 });
 
+app.use((req, res, next) => {
+  res.status(404).render("error/404", {
+    pageTitle: "Ta strona nie istnieje",
+    message: "Strona o podanym url nie istnieje...",
+  });
+});
+
 appListen(app);
