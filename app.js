@@ -7,21 +7,34 @@ import { fileURLToPath } from "url";
 import { appListen } from "./helpers/listen-app.js";
 import ConnectMongoDBSession from "connect-mongodb-session";
 import session from "express-session";
-import URI from "./URI.js";
+// import URI from "./URI.js";
 import { Campaign } from "./models/campaign.js";
 import mongoose from "mongoose";
 import { generateToken } from "./helpers/csrf.js";
+import helmet from "helmet";
+import compression from "compression";
+import morgan from "morgan";
+import fs from "fs";
 
 const MongoDBStore = ConnectMongoDBSession(session);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// const URI = `mongodb+srv://pejdzor:6Km0lLIVhe6q93pv@payoutscluster.q9zysai.mongodb.net/payoutsDB`;
+const URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@payoutscluster.q9zysai.mongodb.net/${process.env.MONGO_DB}`;
+console.log(URI);
+
 const app = Express();
 const store = new MongoDBStore({ uri: URI, collection: "sessions" });
 
 app.set("view engine", "ejs");
 app.set("views", "views");
+
+const logStream = fs.createWriteStream(path.join(__dirname, "access.log"), {flags: 'a'})
+
+app.use(compression());
+app.use(morgan("combined", {stream: logStream}));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(Express.static(path.join(__dirname, "public")));
@@ -114,4 +127,4 @@ app.use((req, res, next) => {
   });
 });
 
-appListen(app);
+appListen(app, URI);

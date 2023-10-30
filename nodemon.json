@@ -1,0 +1,7 @@
+{
+  "env": {
+    "MONGO_USER": "pejdzor",
+    "MONGO_PASSWORD": "6Km0lLIVhe6q93pv",
+    "MONGO_DB": "payoutsDB"
+  }
+}

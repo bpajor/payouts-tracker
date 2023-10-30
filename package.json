@@ -6,7 +6,9 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "start": "SET NODE_ENV=production& SET MONGO_USER=pejdzor& SET MONGO_PASSWORD=6Km0lLIVhe6q93pv& SET MONGO_DB=payoutsDB& node app.js",
+    "start-server": "node app.js",
+    "start:dev": "nodemon app.js --config"
   },
   "repository": {
     "type": "git",
@@ -24,6 +26,7 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
+    "compression": "^1.7.4",
     "connect-flash": "^0.1.1",
     "connect-mongodb-session": "^3.1.1",
     "csrf-sync": "^4.0.1",
@@ -37,8 +40,10 @@
     "express-validator": "^7.0.1",
     "fomantic-ui": "^2.9.2",
     "fomantic-ui-css": "^2.9.2",
+    "helmet": "^7.0.0",
     "mongodb": "^5.7.0",
     "mongoose": "^7.4.3",
+    "morgan": "^1.10.0",
     "xlsx": "^0.18.5"
   }
 }
