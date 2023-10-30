@@ -4,6 +4,9 @@
   "version": "1.0.0",
   "description": "Payouts Tracker project",
   "main": "app.js",
+  "engines": {
+    "node": "20.1.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "SET NODE_ENV=production& SET MONGO_USER=pejdzor& SET MONGO_PASSWORD=6Km0lLIVhe6q93pv& SET MONGO_DB=payoutsDB& node app.js",
