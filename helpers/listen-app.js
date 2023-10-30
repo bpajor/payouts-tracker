@@ -1,5 +1,4 @@
 import mongoose from "mongoose"
-import URI from '../URI.js'
 
 export const appListen = async (app, URI) => {
     try {

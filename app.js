@@ -7,7 +7,6 @@ import { fileURLToPath } from "url";
 import { appListen } from "./helpers/listen-app.js";
 import ConnectMongoDBSession from "connect-mongodb-session";
 import session from "express-session";
-// import URI from "./URI.js";
 import { Campaign } from "./models/campaign.js";
 import mongoose from "mongoose";
 import { generateToken } from "./helpers/csrf.js";
@@ -21,7 +20,6 @@ const MongoDBStore = ConnectMongoDBSession(session);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// const URI = `mongodb+srv://pejdzor:6Km0lLIVhe6q93pv@payoutscluster.q9zysai.mongodb.net/payoutsDB`;
 const URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@payoutscluster.q9zysai.mongodb.net/${process.env.MONGO_DB}`;
 console.log(URI);
 
