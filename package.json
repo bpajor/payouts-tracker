@@ -9,7 +9,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "SET NODE_ENV=production& SET MONGO_USER=pejdzor& SET MONGO_PASSWORD=6Km0lLIVhe6q93pv& SET MONGO_DB=payoutsDB& node app.js",
+    "start": "SET NODE_ENV=production",
     "start-server": "node app.js",
     "start:dev": "nodemon app.js --config"
   },

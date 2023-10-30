@@ -10,7 +10,6 @@ import session from "express-session";
 import { Campaign } from "./models/campaign.js";
 import mongoose from "mongoose";
 import { generateToken } from "./helpers/csrf.js";
-import helmet from "helmet";
 import compression from "compression";
 import morgan from "morgan";
 import fs from "fs";
@@ -21,7 +20,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@payoutscluster.q9zysai.mongodb.net/${process.env.MONGO_DB}`;
-console.log(URI);
 
 const app = Express();
 const store = new MongoDBStore({ uri: URI, collection: "sessions" });
@@ -38,7 +36,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(Express.static(path.join(__dirname, "public")));
 app.use(
   session({
-    secret: "13RDn3U9LvxRDTY",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store: store,

@@ -2,6 +2,7 @@
   "env": {
     "MONGO_USER": "pejdzor",
     "MONGO_PASSWORD": "6Km0lLIVhe6q93pv",
-    "MONGO_DB": "payoutsDB"
+    "MONGO_DB": "payoutsDB",
+    "SESSION_SECRET": "13RDn3U9LvxRDTY"
   }
 }
